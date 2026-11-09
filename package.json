@@ -2,16 +2,27 @@
   "name": "html2md",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Расширение Chrome для конвертации страниц в Markdown.",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "test": "npm run build && node --test"
+    "build": "node scripts/build.js",
+    "test": "npm run build && node --test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix --max-warnings=0"
   },
   "dependencies": {
-    "@mozilla/readability": "^0.6.0"
+    "@mozilla/readability": "^0.6.0",
+    "turndown": "^7.2.5",
+    "turndown-plugin-gfm": "^1.0.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "esbuild": "^0.28.2",
-    "jsdom": "^31.0.0"
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "jsdom": "^31.0.0",
+    "prettier": "^3.9.10"
   }
 }
