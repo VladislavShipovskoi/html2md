@@ -1,19 +1,31 @@
 {
-  "extensionName": { "message": "HTML to Markdown" },
+  "extensionName": {
+    "message": "HTML to Markdown"
+  },
   "extensionDescription": {
     "message": "Расширение Chrome для конвертации страниц в Markdown."
   },
-  "checking": { "message": "Проверяем страницу…" },
-  "checkingDescription": {
-    "message": "Определяем, доступен ли текст для конвертации."
+  "checking": {
+    "message": "Проверяем страницу…"
   },
-  "pageLabel": { "message": "Страница" },
-  "textLabel": { "message": "Текст" },
+  "checkingDescription": {
+    "message": "Выделяем основное содержимое страницы."
+  },
+  "pageLabel": {
+    "message": "Страница"
+  },
+  "textLabel": {
+    "message": "Основной текст"
+  },
   "footer": {
     "message": "Предварительная проверка. Конвертация пока не реализована."
   },
-  "conversionAvailable": { "message": "Конвертация возможна" },
-  "conversionUnavailable": { "message": "Конвертация недоступна" },
+  "conversionAvailable": {
+    "message": "Конвертация возможна"
+  },
+  "conversionUnavailable": {
+    "message": "Конвертация недоступна"
+  },
   "noActiveTab": {
     "message": "Не удалось найти активную вкладку. Откройте страницу и попробуйте снова."
   },
@@ -24,17 +36,24 @@
     "message": "Этот тип документа не поддерживается. Для анализа нужна HTML-страница."
   },
   "textAvailable": {
-    "message": "На странице есть доступный текст. Можно попробовать преобразовать его в Markdown; качество выделения основного текста пока не проверяется."
+    "message": "Основной текст успешно извлечён. Его можно использовать для конвертации в Markdown."
   },
-  "noVisibleText": {
-    "message": "На странице не найден видимый текст. Дождитесь загрузки содержимого и откройте расширение снова."
+  "untitled": {
+    "message": "Без названия"
   },
-  "untitled": { "message": "Без названия" },
   "characterCount": {
     "message": "Символов: $COUNT$",
-    "placeholders": { "count": { "content": "$1", "example": "1 234" } }
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "1 234"
+      }
+    }
   },
   "accessError": {
     "message": "Не удалось получить доступ к содержимому. Возможно, Chrome ограничивает доступ или вкладка была закрыта. После загрузки страницы попробуйте снова."
+  },
+  "articleNotFound": {
+    "message": "Не удалось выделить основной текст. Возможно, для этой страницы нужен другой способ извлечения. Попробуйте снова после загрузки содержимого."
   }
 }

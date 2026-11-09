@@ -18,19 +18,6 @@ function showResult(available, explanation) {
   messageEl.textContent = explanation;
 }
 
-function inspectPage() {
-  const supported = ["text/html", "application/xhtml+xml"].includes(
-    document.contentType,
-  );
-  const text = supported ? (document.body?.innerText ?? "").trim() : "";
-
-  return {
-    supported,
-    title: document.title,
-    characters: text.length,
-  };
-}
-
 async function analyzePage() {
   try {
     const [tab] = await chrome.tabs.query({
@@ -56,7 +43,7 @@ async function analyzePage() {
 
     const [{ result } = {}] = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      func: inspectPage,
+      files: ["page-analysis.js"],
     });
 
     if (!result) throw new Error("No analysis result");
@@ -66,8 +53,8 @@ async function analyzePage() {
     }
 
     showResult(
-      result.characters > 0,
-      result.characters > 0 ? t("textAvailable") : t("noVisibleText"),
+      result.articleFound,
+      result.articleFound ? t("textAvailable") : t("articleNotFound"),
     );
 
     document.querySelector("#page-title").textContent =

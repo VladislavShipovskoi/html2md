@@ -1,19 +1,31 @@
 {
-  "extensionName": { "message": "HTML to Markdown" },
+  "extensionName": {
+    "message": "HTML to Markdown"
+  },
   "extensionDescription": {
     "message": "Chrome extension for converting web pages to Markdown."
   },
-  "checking": { "message": "Checking the page…" },
-  "checkingDescription": {
-    "message": "Checking whether text is available for conversion."
+  "checking": {
+    "message": "Checking the page…"
   },
-  "pageLabel": { "message": "Page" },
-  "textLabel": { "message": "Text" },
+  "checkingDescription": {
+    "message": "Extracting the main content of the page."
+  },
+  "pageLabel": {
+    "message": "Page"
+  },
+  "textLabel": {
+    "message": "Main content"
+  },
   "footer": {
     "message": "Preliminary check. Conversion is not implemented yet."
   },
-  "conversionAvailable": { "message": "Conversion is possible" },
-  "conversionUnavailable": { "message": "Conversion is unavailable" },
+  "conversionAvailable": {
+    "message": "Conversion is possible"
+  },
+  "conversionUnavailable": {
+    "message": "Conversion is unavailable"
+  },
   "noActiveTab": {
     "message": "Could not find the active tab. Open a page and try again."
   },
@@ -24,17 +36,24 @@
     "message": "This document type is not supported. Analysis requires an HTML page."
   },
   "textAvailable": {
-    "message": "The page contains accessible text. It can be converted to Markdown; the quality of main content extraction has not been checked yet."
+    "message": "Main content was extracted successfully. It can be used for Markdown conversion."
   },
-  "noVisibleText": {
-    "message": "No visible text was found on this page. Wait for the content to load, then reopen the extension."
+  "untitled": {
+    "message": "Untitled"
   },
-  "untitled": { "message": "Untitled" },
   "characterCount": {
     "message": "Characters: $COUNT$",
-    "placeholders": { "count": { "content": "$1", "example": "1,234" } }
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "1,234"
+      }
+    }
   },
   "accessError": {
     "message": "Could not access the content. Chrome may restrict access, or the tab may have been closed. Try again after the page has loaded."
+  },
+  "articleNotFound": {
+    "message": "No main content could be extracted. This page may need a different extraction method. Try again once the content has loaded."
   }
 }

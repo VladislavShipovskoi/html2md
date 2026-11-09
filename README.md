@@ -2,6 +2,11 @@
 
 Chrome extension for converting web pages to Markdown.
 
+Click the extension icon to check whether Mozilla Readability can extract the main
+content of the current page. The popup shows the extracted title and character count.
+If extraction fails, it reports that no article was found; this does not mean that
+the page cannot be converted by another method. Markdown conversion is not implemented yet.
+
 The interface and extension description support English and Russian. Chrome selects
 the language automatically based on its language settings, with English as the fallback.
 
@@ -12,13 +17,16 @@ are not supported. Text inside iframes and images is not analyzed.
 
 ## Build
 
-Requires Node.js 22 or later. There are no third-party dependencies, so `npm install` is not needed.
+Requires Node.js 22 or later.
 
 ```sh
+npm ci
 npm run build
+npm test
 ```
 
-The build clears `dist/`, then copies the contents of `extension/` into it.
+The build clears `dist/`, copies the extension files, and bundles Mozilla Readability
+with esbuild. All analysis code is included locally; no remote scripts are loaded.
 
 ## Install in Chrome
 
