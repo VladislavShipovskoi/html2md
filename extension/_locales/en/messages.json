@@ -1,0 +1,40 @@
+{
+  "extensionName": { "message": "HTML to Markdown" },
+  "extensionDescription": {
+    "message": "Chrome extension for converting web pages to Markdown."
+  },
+  "checking": { "message": "Checking the page…" },
+  "checkingDescription": {
+    "message": "Checking whether text is available for conversion."
+  },
+  "pageLabel": { "message": "Page" },
+  "textLabel": { "message": "Text" },
+  "footer": {
+    "message": "Preliminary check. Conversion is not implemented yet."
+  },
+  "conversionAvailable": { "message": "Conversion is possible" },
+  "conversionUnavailable": { "message": "Conversion is unavailable" },
+  "noActiveTab": {
+    "message": "Could not find the active tab. Open a page and try again."
+  },
+  "restrictedPage": {
+    "message": "Chrome does not allow analysis on this page. Open a regular web page (HTTP or HTTPS)."
+  },
+  "unsupportedDocument": {
+    "message": "This document type is not supported. Analysis requires an HTML page."
+  },
+  "textAvailable": {
+    "message": "The page contains accessible text. It can be converted to Markdown; the quality of main content extraction has not been checked yet."
+  },
+  "noVisibleText": {
+    "message": "No visible text was found on this page. Wait for the content to load, then reopen the extension."
+  },
+  "untitled": { "message": "Untitled" },
+  "characterCount": {
+    "message": "Characters: $COUNT$",
+    "placeholders": { "count": { "content": "$1", "example": "1,234" } }
+  },
+  "accessError": {
+    "message": "Could not access the content. Chrome may restrict access, or the tab may have been closed. Try again after the page has loaded."
+  }
+}

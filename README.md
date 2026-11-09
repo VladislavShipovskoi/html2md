@@ -1,26 +1,31 @@
 # HTML to Markdown
 
-Минимальный каркас расширения Chrome. Конвертация пока не реализована:
-нажатие на значок ничего не делает, разрешения не запрашиваются.
+Chrome extension for converting web pages to Markdown.
 
-## Сборка
+The interface and extension description support English and Russian. Chrome selects
+the language automatically based on its language settings, with English as the fallback.
 
-Нужен Node.js 22 или новее. Сторонних зависимостей нет, `npm install` не требуется.
+Analysis runs locally. The `activeTab` and `scripting` permissions allow the extension
+to read the current page after you click its icon; persistent access to all websites is not requested.
+Internal Chrome pages, the Chrome Web Store, local files, and PDF documents
+are not supported. Text inside iframes and images is not analyzed.
+
+## Build
+
+Requires Node.js 22 or later. There are no third-party dependencies, so `npm install` is not needed.
 
 ```sh
 npm run build
 ```
 
-В PowerShell, если запуск `npm.ps1` запрещён политикой выполнения, используйте `npm.cmd run build`.
+The build clears `dist/`, then copies the contents of `extension/` into it.
 
-Сборка копирует содержимое `extension/` в `dist/`, предварительно очищая `dist/`.
+## Install in Chrome
 
-## Установка в Chrome
+1. Open `chrome://extensions`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select the `dist` folder.
+4. Open the extensions menu and pin HTML to Markdown to the toolbar.
 
-1. Откройте `chrome://extensions`.
-2. Включите «Режим разработчика».
-3. Нажмите «Загрузить распакованное расширение» и выберите папку `dist`.
-4. Откройте меню расширений и закрепите HTML to Markdown на панели инструментов.
-
-После изменения исходников повторите сборку и нажмите кнопку обновления расширения
-на странице `chrome://extensions`.
+After changing the source files, rebuild and click the extension's reload button
+on `chrome://extensions`.

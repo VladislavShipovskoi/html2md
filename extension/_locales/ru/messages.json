@@ -1,0 +1,40 @@
+{
+  "extensionName": { "message": "HTML to Markdown" },
+  "extensionDescription": {
+    "message": "Расширение Chrome для конвертации страниц в Markdown."
+  },
+  "checking": { "message": "Проверяем страницу…" },
+  "checkingDescription": {
+    "message": "Определяем, доступен ли текст для конвертации."
+  },
+  "pageLabel": { "message": "Страница" },
+  "textLabel": { "message": "Текст" },
+  "footer": {
+    "message": "Предварительная проверка. Конвертация пока не реализована."
+  },
+  "conversionAvailable": { "message": "Конвертация возможна" },
+  "conversionUnavailable": { "message": "Конвертация недоступна" },
+  "noActiveTab": {
+    "message": "Не удалось найти активную вкладку. Откройте страницу и попробуйте снова."
+  },
+  "restrictedPage": {
+    "message": "На этой странице Chrome не разрешает анализ. Откройте обычную веб-страницу (HTTP или HTTPS)."
+  },
+  "unsupportedDocument": {
+    "message": "Этот тип документа не поддерживается. Для анализа нужна HTML-страница."
+  },
+  "textAvailable": {
+    "message": "На странице есть доступный текст. Можно попробовать преобразовать его в Markdown; качество выделения основного текста пока не проверяется."
+  },
+  "noVisibleText": {
+    "message": "На странице не найден видимый текст. Дождитесь загрузки содержимого и откройте расширение снова."
+  },
+  "untitled": { "message": "Без названия" },
+  "characterCount": {
+    "message": "Символов: $COUNT$",
+    "placeholders": { "count": { "content": "$1", "example": "1 234" } }
+  },
+  "accessError": {
+    "message": "Не удалось получить доступ к содержимому. Возможно, Chrome ограничивает доступ или вкладка была закрыта. После загрузки страницы попробуйте снова."
+  }
+}
