@@ -3,33 +3,62 @@
 [![CI](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml)
 [![Tests](https://github.com/VladislavShipovskoi/html2md/actions/workflows/tests.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/tests.yml)
 
-Chrome extension for converting web pages to Markdown.
+Chrome extension that extracts the main content of a web page and converts it to
+Markdown. Preview and copy the result, or download a ZIP with images for offline use.
 
-Click the extension icon to check whether Mozilla Readability can extract the main
-content of the current page. The popup shows the extracted title and character count.
-If extraction fails, it reports that no article was found; this does not mean that
-the page cannot be converted by another method. Markdown conversion is not implemented yet.
+## Features
 
-The interface and extension description support English and Russian. Chrome selects
-the language automatically based on its language settings, with English as the fallback.
+- Main content extraction with Mozilla Readability.
+- Markdown headings, lists, links, quotes, tables, and fenced code blocks.
+- Code indentation, blank lines, explicit line containers, and `<br>` preservation.
+- Separate code blocks and language headings for language tabs present in the page,
+  including hidden panels. Short fragments inside explanations remain inline.
+- ZIP export with a Markdown file and an `images/` folder using local relative paths.
+- English and Russian interfaces, selected by Chrome's language settings, with English
+  as the fallback.
 
-Analysis runs locally. The `activeTab` and `scripting` permissions allow the extension
-to read the current page after you click its icon; persistent access to all websites is not requested.
-Internal Chrome pages, the Chrome Web Store, local files, and PDF documents
-are not supported. Text inside iframes and images is not analyzed.
+## Usage
+
+1. Open page and click the extension icon.
+2. Check the extracted title, text size, and availability result.
+3. Click **Convert** to preview the Markdown source.
+4. Click **Copy** for Markdown with original image URLs, or **Download ZIP** to save
+   the Markdown and available images together.
+5. Extract the ZIP and keep `images/` beside the Markdown file.
+
+Keep the popup open while the archive is prepared. Unavailable images retain their
+original URLs; the popup shows a warning and the archive includes `missing-images.txt`.
+
+## Privacy and limitations
+
+Extraction and conversion run locally, without a server or external conversion API.
+Image export requests images from their source URLs using the source tab's same-origin
+session. Cross-origin requests follow browser CORS restrictions.
+
+| Permission       | Purpose                                                        |
+| ---------------- | -------------------------------------------------------------- |
+| `activeTab`      | Temporary access to the page after clicking the extension icon |
+| `scripting`      | Extract page content and fetch images in the source tab        |
+| `downloads`      | Save ZIP archives                                              |
+| `clipboardWrite` | Copy Markdown                                                  |
+
+Persistent access to all websites is not requested. Internal Chrome pages, the Chrome
+Web Store, local files, and PDF documents are not supported. Text inside iframes and
+images is not extracted. Content absent from the DOM, such as unloaded tab contents
+or virtualized editor lines, cannot be recovered automatically.
+
+Article extraction is heuristic: a failed analysis does not prove the page cannot be
+converted using another method. Image downloads can fail due to HTTP errors,
+authentication, CORS.
 
 ## Build
 
-Requires Node.js 22 or later.
+Use Node.js 22.22.2+ or 24.15.0+; CI tests the latest Node.js 22 and 24 releases.
 
 ```sh
 npm ci
 npm run build
-npm test
 ```
-
-The build clears `dist/`, copies the extension files, and bundles Mozilla Readability
-with esbuild. All analysis code is included locally; no remote scripts are loaded.
 
 ## Install in Chrome
 
