@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
 import { analyzePage } from '../extension/page-analysis.js';
 import { createMarkdown } from '../extension/markdown.js';
-import { normalizeCodeBlocks } from '../extension/code-blocks.js';
+import { normalizeCodeBlocks, extractCodeText, fencedCode } from '../extension/code-blocks.js';
 
 function convert(html) {
   const { window } = new JSDOM('');
@@ -127,6 +128,85 @@ test('normalization is idempotent and preserves indentation', () => {
     assert.equal(window.document.body.innerHTML, before);
     assert.equal(window.document.querySelector('pre code').textContent, '  first()\n    second()');
     assert.equal(window.document.querySelector('p pre'), null);
+  } finally {
+    window.close();
+  }
+});
+
+test('restores original lines from duplicate code versions through Readability', async () => {
+  const html = await readFile(
+    new URL('./fixtures/dual-code-versions.html', import.meta.url),
+    'utf8'
+  );
+  const { window } = new JSDOM(html, { url: 'https://example.com' });
+  try {
+    const before = window.document.documentElement.outerHTML;
+    const markdown = createMarkdown(analyzePage(window.document), window.document, 'Source');
+    assert.ok(
+      markdown.includes(
+        "#### JavaScript\n\n```js\nfunction* getLangs() {\n  yield 'js'\n}\n\nfor (const item of getLangs()) {\n  console.log(item)\n}\n```"
+      )
+    );
+    assert.equal(markdown.match(/function\* getLangs/g).length, 1);
+    assert.ok(!markdown.includes('Copy code'));
+    assert.equal(window.document.documentElement.outerHTML, before);
+    normalizeCodeBlocks(window.document);
+    const normalized = window.document.body.innerHTML;
+    normalizeCodeBlocks(window.document);
+    assert.equal(window.document.body.innerHTML, normalized);
+  } finally {
+    window.close();
+  }
+});
+
+test('extracts explicit line groups and br without splitting highlighted tokens', () => {
+  const { window } = new JSDOM('');
+  try {
+    for (const lineClass of ['line', 'code-line']) {
+      const node = window.document.createElement('code');
+      node.innerHTML = `<span class="${lineClass}"><span class="token">first</span>()</span>\n<span class="${lineClass}"></span>\n<span class="${lineClass}">  second()</span>`;
+      assert.equal(extractCodeText(node), 'first()\n\n  second()');
+    }
+
+    const markdown = convert(
+      '<pre data-lang="python"><code><span>print</span><span>(1)</span><br>  next()</code><code>duplicate</code></pre>'
+    );
+    assert.ok(markdown.includes('```python\nprint(1)\n  next()\n```'));
+    assert.ok(!markdown.includes('duplicate'));
+  } finally {
+    window.close();
+  }
+});
+
+test('selects the first nonempty code candidate and supports data-lang on code', () => {
+  const markdown = convert(
+    '<pre><code> </code><code data-lang="go">main()</code><code>duplicate</code><button>Copy</button></pre>'
+  );
+  assert.ok(markdown.includes('#### Go\n\n```go\nmain()\n```'));
+  assert.ok(!markdown.includes('duplicate'));
+  assert.ok(!markdown.includes('Copy'));
+});
+
+test('removes tools from code sources and skips empty tab containers', () => {
+  const markdown = convert(
+    '<div class="lms-tabs"><p>No examples</p></div><div role="tabpanel">Explanation only</div><pre><code class="language-customlang">run()<button>Copy</button><span class="line-numbers-rows">123</span></code></pre>'
+  );
+  assert.ok(markdown.includes('#### customlang\n\n```customlang\nrun()\n```'));
+  assert.ok(!markdown.includes('Copy'));
+  assert.ok(!markdown.includes('123'));
+  assert.ok(markdown.includes('Explanation only'));
+});
+
+test('unlabelled code panels preserve code without inventing a language', () => {
+  const markdown = convert('<div role="tabpanel" hidden><pre><code>run()</code></pre></div>');
+  assert.ok(markdown.includes('```\nrun()\n```'));
+  assert.ok(!markdown.includes('####'));
+});
+
+test('fenced code supports pre text without a code child and rejects invalid language labels', () => {
+  const { window } = new JSDOM('<pre data-language="not a language">run()</pre>');
+  try {
+    assert.equal(fencedCode(window.document.querySelector('pre')), '\n\n```\nrun()\n```\n\n');
   } finally {
     window.close();
   }

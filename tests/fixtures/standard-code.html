@@ -1,0 +1,21 @@
+<article>
+  <h1>Standard code blocks</h1>
+  <p>A JavaScript example with indentation, an empty line, and escaped HTML.</p>
+  <pre><code class="language-javascript">function render(value) {
+  const tag = '&lt;strong&gt;'
+
+  return tag + value + '&lt;/strong&gt;'
+}
+</code></pre>
+  <p>A single-line block remains a block.</p>
+  <pre><code>console.log('hello')</code></pre>
+  <p>A block without a code element.</p>
+  <pre data-language="python">
+if ready:
+    print("ready")
+    print("done")</pre>
+  <p>Code containing Markdown fences needs a longer surrounding fence.</p>
+  <pre><code class="language-markdown">```js
+console.log('nested')
+```</code></pre>
+</article>

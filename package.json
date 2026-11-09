@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=extension/*.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",

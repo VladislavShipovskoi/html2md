@@ -80,3 +80,186 @@ test('creates Markdown-only ZIP when there are no images', () => {
   assert.equal(result.failedCount, 0);
   window.close();
 });
+
+test('download failures still produce ZIP with valid local references for available images', async (t) => {
+  const { window } = new JSDOM('');
+  t.mock.method(
+    globalThis,
+    'fetch',
+    async (url) =>
+      new Response(
+        url.endsWith('.svg') ? '<svg xmlns="http://www.w3.org/2000/svg"/>' : 'Not found',
+        {
+          status: url.endsWith('.svg') ? 200 : 404,
+          headers: { 'content-type': url.endsWith('.svg') ? 'image/svg+xml' : 'text/plain' },
+        }
+      )
+  );
+  try {
+    const urls = imageUrls(article, window.document);
+    const images = await fetchImages(urls);
+    const archive = createArchive(article, images, window.document, 'Source');
+    const files = unzipSync(archive.bytes);
+    const markdown = strFromU8(files['Example.md']);
+    const localReferences = [...markdown.matchAll(/!\[[^\]]*\]\((images\/[^)]+)\)/g)].map(
+      (match) => match[1]
+    );
+    assert.equal(localReferences.length, 2);
+    assert.equal(new Set(localReferences).size, 1);
+
+    for (const path of localReferences) {
+      assert.ok(files[path]?.length, `Missing archive entry: ${path}`);
+      assert.equal(strFromU8(files[path]), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+    }
+
+    assert.equal(archive.failedCount, 1);
+    assert.ok(markdown.includes('https://example.com/assets/missing.png'));
+    assert.ok(strFromU8(files['missing-images.txt']).includes('missing.png'));
+  } finally {
+    window.close();
+  }
+});
+
+test('ignores malformed image URLs and non-HTTP schemes', () => {
+  const { window } = new JSDOM('');
+  try {
+    assert.deepEqual(
+      imageUrls(
+        {
+          ...article,
+          content:
+            '<img src="http://["><img src="data:image/png;base64,AA=="><img src="blob:test"><img src="file:///image.png">',
+        },
+        window.document
+      ),
+      []
+    );
+  } finally {
+    window.close();
+  }
+});
+
+test('handles missing MIME, empty images, stream errors and timeout rejection', async (t) => {
+  t.mock.method(globalThis, 'fetch', async (url) => {
+    if (url.endsWith('/type')) {
+      return new Response(new Uint8Array([1]));
+    }
+
+    if (url.endsWith('/empty')) {
+      return new Response(new Uint8Array(), { headers: { 'content-type': 'image/png' } });
+    }
+
+    if (url.endsWith('/stream')) {
+      return {
+        ok: true,
+        headers: new Headers({ 'content-type': 'image/png' }),
+        body: {
+          getReader: () => ({
+            read: async () => {
+              throw new Error('Stream failed');
+            },
+          }),
+        },
+      };
+    }
+
+    throw new DOMException('Timed out', 'TimeoutError');
+  });
+  const results = await fetchImages([
+    'https://example.com/type',
+    'https://example.com/empty',
+    'https://example.com/stream',
+    'https://example.com/timeout',
+  ]);
+  assert.ok(results.every((image) => image.failed));
+});
+
+test('combines multiple stream chunks and accepts MIME parameters', async (t) => {
+  let reads = 0;
+  t.mock.method(globalThis, 'fetch', async () => ({
+    ok: true,
+    headers: new Headers({ 'content-type': 'IMAGE/PNG; charset=binary' }),
+    body: {
+      getReader: () => ({
+        read: async () =>
+          reads++ === 0
+            ? { value: new Uint8Array([1, 2]) }
+            : reads === 2
+              ? { value: new Uint8Array([3]) }
+              : { done: true },
+      }),
+    },
+  }));
+  const [image] = await fetchImages(['https://example.com/image']);
+  assert.equal(image.type, 'image/png');
+  assert.deepEqual(image.bytes, [1, 2, 3]);
+});
+
+test('enforces image and total size boundaries and cancels oversized streams', async (t) => {
+  const mib = 1024 * 1024;
+  let cancellations = 0;
+  // These tests exercise byte accounting, not copying: avoid allocating 50 MiB of fixtures.
+  t.mock.method(globalThis, 'Uint8Array', function (size) {
+    return {
+      length: size,
+      set() {},
+      *[Symbol.iterator]() {
+        yield 1;
+      },
+    };
+  });
+  t.mock.method(globalThis, 'fetch', async (url) => {
+    let read = false;
+    const size = Number(new URL(url).searchParams.get('size'));
+    return {
+      ok: true,
+      headers: new Headers({ 'content-type': 'image/png' }),
+      body: {
+        getReader: () => ({
+          read: async () => {
+            if (read) {
+              return { done: true };
+            }
+
+            read = true;
+            return { value: { length: size } };
+          },
+          cancel: async () => {
+            cancellations++;
+          },
+        }),
+      },
+    };
+  });
+  const imageUrl = (size) => `https://example.com/image?size=${size}`;
+  const [atLimit] = await fetchImages([imageUrl(10 * mib)]);
+  assert.ok(!atLimit.failed);
+  const [oversized] = await fetchImages([imageUrl(10 * mib + 1)]);
+  assert.equal(oversized.failed, true);
+  const total = await fetchImages([...Array(5).fill(imageUrl(10 * mib)), imageUrl(1)]);
+  assert.ok(total.slice(0, 5).every((image) => !image.failed));
+  assert.equal(total[5].failed, true);
+  assert.equal(cancellations, 2);
+});
+
+test('archives unknown image MIME and reports missing bytes', () => {
+  const { window } = new JSDOM('');
+  try {
+    const archive = createArchive(
+      article,
+      [
+        { url: 'https://example.com/assets/diagram.svg', type: 'image/custom', bytes: [1] },
+        { url: 'https://example.com/assets/missing.png', bytes: [] },
+        { url: 'https://example.com/no-bytes' },
+      ],
+      window.document,
+      'Source'
+    );
+    const files = unzipSync(archive.bytes);
+    assert.ok(files['images/image-1.img']);
+    assert.equal(archive.failedCount, 2);
+    assert.ok(strFromU8(files['Example.md']).includes('images/image-1.img'));
+  } finally {
+    window.close();
+  }
+});

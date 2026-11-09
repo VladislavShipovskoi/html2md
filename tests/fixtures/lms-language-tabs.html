@@ -1,0 +1,31 @@
+<article>
+  <h1>Language tabs with local numeric identifiers</h1>
+  <p>Repeated identifiers in different tab groups must not mix their languages.</p>
+  <div class="lms-tabs">
+    <div role="tablist">
+      <button role="tab" data-tabid="0">Python</button>
+      <button role="tab" data-tabid="1">JavaScript</button>
+    </div>
+    <div role="tabpanel" data-tabpane="0">
+      <pre><code>for value in values:
+    print(value)</code></pre>
+    </div>
+    <div role="tabpanel" data-tabpane="1" hidden>
+      <pre><code>for (const value of values) {
+  console.log(value)
+}</code></pre>
+    </div>
+  </div>
+  <div class="lms-tabs">
+    <div role="tablist">
+      <button role="tab" data-tabid="0">Go</button>
+      <button role="tab" data-tabid="1">C++</button>
+    </div>
+    <div role="tabpanel" data-tabpane="0">
+      <pre><code>fmt.Println("hello")</code></pre>
+    </div>
+    <div role="tabpanel" data-tabpane="1" hidden>
+      <pre><code>std::cout &lt;&lt; "hello";</code></pre>
+    </div>
+  </div>
+</article>

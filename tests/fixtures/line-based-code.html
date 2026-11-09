@@ -1,0 +1,14 @@
+<article>
+  <h1>Explicit line containers</h1>
+  <p>Adjacent line spans represent separate lines, including empty ones.</p>
+  <pre
+    data-lang="python"><code><span class="line">def greet(name):</span><span class="line">    print(name)</span><span class="line"></span><span class="line">greet("World")</span></code></pre>
+  <p>The code-line variant can contain nested syntax tokens.</p>
+  <pre><code data-language="js"><span class="code-line"><span class="token keyword">const</span> count = 2</span><span class="code-line"></span><span class="code-line">  console.log(count)</span></code></pre>
+  <p>Explicit breaks represent newlines as well.</p>
+  <pre data-lang="sql"><code>SELECT name<br>FROM users<br><br>WHERE active = true;</code></pre>
+  <p>A multiline code element without a pre wrapper.</p>
+  <!-- prettier-ignore -->
+  <code>first()
+  second()</code>
+</article>

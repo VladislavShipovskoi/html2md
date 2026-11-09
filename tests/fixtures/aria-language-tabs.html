@@ -1,0 +1,23 @@
+<article>
+  <h1>Language tabs with ARIA relationships</h1>
+  <p>All examples are present in the document, even when their panels are hidden.</p>
+  <div role="tablist">
+    <button role="tab" id="python-tab" aria-controls="python-panel" aria-selected="true">
+      Python
+    </button>
+    <button role="tab" id="java-tab" aria-controls="java-panel" aria-selected="false">Java</button>
+    <button role="tab" id="csharp-tab" aria-controls="csharp-panel" aria-selected="false">
+      C#
+    </button>
+  </div>
+  <div role="tabpanel" id="python-panel" aria-labelledby="python-tab">
+    <p>Use <code>None</code> for a missing value.</p>
+    <pre><code>print("hello")</code></pre>
+  </div>
+  <div role="tabpanel" id="java-panel" aria-labelledby="java-tab" hidden>
+    <pre><code>System.out.println("hello");</code></pre>
+  </div>
+  <div role="tabpanel" id="csharp-panel" aria-labelledby="csharp-tab" hidden>
+    <code>Console.WriteLine("hello");</code>
+  </div>
+</article>

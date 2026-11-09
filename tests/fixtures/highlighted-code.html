@@ -1,0 +1,10 @@
+<article>
+  <h1>Syntax highlighting and duplicate versions</h1>
+  <p>Token spans must not introduce spaces or line breaks.</p>
+  <pre
+    class="language-js"><code><span class="token keyword">const</span> <span class="token variable">total</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token console">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>total<span class="token punctuation">)</span></code><button type="button">Copy</button></pre>
+  <p>Only the first nonempty code version should be exported.</p>
+  <pre
+    data-lang="go"><code></code><code>fmt.Println("original")</code><code>fmt.Println("duplicate")</code></pre>
+</article>

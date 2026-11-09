@@ -35,6 +35,8 @@ await build({
   outfile: resolve(outputDirectory, 'popup.js'),
   bundle: true,
   format: 'iife',
+  globalName: 'html2md',
+  footer: { js: 'html2md.initializePopup();' },
 });
 
 console.log('Extension built in dist/');
