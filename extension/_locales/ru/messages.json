@@ -1,4 +1,20 @@
 {
+  "convert": { "message": "Конвертировать" },
+  "previewLabel": { "message": "Предпросмотр Markdown" },
+  "copy": { "message": "Скопировать" },
+  "download": { "message": "Скачать .md" },
+  "sourceLabel": { "message": "Источник" },
+  "copied": { "message": "Скопировано в буфер обмена." },
+  "copyError": {
+    "message": "Не удалось скопировать. Выделите и скопируйте текст предпросмотра вручную."
+  },
+  "conversionError": {
+    "message": "Не удалось преобразовать извлечённый текст в Markdown."
+  },
+  "downloadStarted": { "message": "Скачивание началось." },
+  "downloadError": {
+    "message": "Не удалось начать скачивание. Попробуйте снова."
+  },
   "extensionName": {
     "message": "HTML to Markdown"
   },
@@ -18,7 +34,7 @@
     "message": "Основной текст"
   },
   "footer": {
-    "message": "Предварительная проверка. Конвертация пока не реализована."
+    "message": "Конвертация выполняется локально. Изображения сохраняются ссылками на исходные URL."
   },
   "conversionAvailable": {
     "message": "Конвертация возможна"

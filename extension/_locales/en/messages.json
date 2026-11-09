@@ -1,4 +1,18 @@
 {
+  "convert": { "message": "Convert" },
+  "previewLabel": { "message": "Markdown preview" },
+  "copy": { "message": "Copy" },
+  "download": { "message": "Download .md" },
+  "sourceLabel": { "message": "Source" },
+  "copied": { "message": "Copied to clipboard." },
+  "copyError": {
+    "message": "Could not copy. Select and copy the preview text manually."
+  },
+  "conversionError": {
+    "message": "Could not convert the extracted content to Markdown."
+  },
+  "downloadStarted": { "message": "Download started." },
+  "downloadError": { "message": "Could not start the download. Try again." },
   "extensionName": {
     "message": "HTML to Markdown"
   },
@@ -18,7 +32,7 @@
     "message": "Main content"
   },
   "footer": {
-    "message": "Preliminary check. Conversion is not implemented yet."
+    "message": "Conversion runs locally. Images remain links to their original URLs."
   },
   "conversionAvailable": {
     "message": "Conversion is possible"

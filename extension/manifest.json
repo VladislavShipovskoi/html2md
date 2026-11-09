@@ -3,7 +3,7 @@
   "name": "__MSG_extensionName__",
   "default_locale": "en",
   "version": "0.1.0",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "downloads", "clipboardWrite"],
   "description": "__MSG_extensionDescription__",
   "icons": {
     "16": "icons/icon-16.png",
