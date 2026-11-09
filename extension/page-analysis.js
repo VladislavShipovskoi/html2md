@@ -1,4 +1,5 @@
 import { Readability } from '@mozilla/readability';
+import { normalizeCodeBlocks } from './code-blocks.js';
 
 export function analyzePage(document) {
   const supported = ['text/html', 'application/xhtml+xml'].includes(document.contentType);
@@ -7,7 +8,12 @@ export function analyzePage(document) {
     return { supported: false };
   }
 
-  const article = new Readability(document.cloneNode(true)).parse();
+  const copy = document.cloneNode(true);
+  normalizeCodeBlocks(copy);
+  const codeClasses = [...copy.querySelectorAll('code, pre')].flatMap((node) => [
+    ...node.classList,
+  ]);
+  const article = new Readability(copy, { classesToPreserve: codeClasses }).parse();
   const text = article?.textContent?.trim() ?? '';
 
   return {

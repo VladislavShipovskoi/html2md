@@ -1,9 +1,11 @@
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
+import { normalizeCodeBlocks, fencedCode } from './code-blocks.js';
 
 export function createMarkdown(article, document, sourceLabel, imagePaths = new Map()) {
   const content = document.createElement('div');
   content.innerHTML = article.content;
+  normalizeCodeBlocks(content);
   content.querySelectorAll('script, style, iframe, form').forEach((node) => node.remove());
 
   for (const [selector, attribute] of [
@@ -38,6 +40,10 @@ export function createMarkdown(article, document, sourceLabel, imagePaths = new 
     bulletListMarker: '-',
   });
   converter.use(gfm);
+  converter.addRule('codeBlocks', {
+    filter: 'pre',
+    replacement: (_content, node) => fencedCode(node),
+  });
   converter.remove(['script', 'style', 'iframe', 'form']);
   const title = article.title.replace(/\s+/g, ' ').replace(/([\\`*_[\]<>#])/g, '\\$1');
   const body = converter.turndown(content).trim();
