@@ -6,7 +6,7 @@
   "description": "Расширение Chrome для конвертации страниц в Markdown.",
   "scripts": {
     "build": "node scripts/build.js",
-    "test": "npm run build && node --test",
+    "test": "node --test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",

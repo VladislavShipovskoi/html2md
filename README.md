@@ -1,5 +1,8 @@
 # HTML to Markdown
 
+[![CI](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml)
+[![Tests](https://github.com/VladislavShipovskoi/html2md/actions/workflows/tests.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/tests.yml)
+
 Chrome extension for converting web pages to Markdown.
 
 Click the extension icon to check whether Mozilla Readability can extract the main
