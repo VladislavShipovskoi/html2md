@@ -2,7 +2,12 @@
   "convert": { "message": "Конвертировать" },
   "previewLabel": { "message": "Предпросмотр Markdown" },
   "copy": { "message": "Скопировать" },
-  "download": { "message": "Скачать .md" },
+  "download": { "message": "Скачать ZIP" },
+  "preparingArchive": { "message": "Скачиваем изображения и готовим ZIP… Не закрывайте это окно." },
+  "archiveMissingImages": {
+    "message": "Скачивание ZIP началось. Не сохранено изображений: $COUNT$. Исходные ссылки оставлены; список — в missing-images.txt внутри архива.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
   "sourceLabel": { "message": "Источник" },
   "copied": { "message": "Скопировано в буфер обмена." },
   "copyError": {
@@ -34,7 +39,7 @@
     "message": "Основной текст"
   },
   "footer": {
-    "message": "Конвертация выполняется локально. Изображения сохраняются ссылками на исходные URL."
+    "message": "ZIP содержит доступные изображения. При копировании остаются исходные ссылки. Не закрывайте окно во время подготовки ZIP."
   },
   "conversionAvailable": {
     "message": "Конвертация возможна"

@@ -1,7 +1,7 @@
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
-export function createMarkdown(article, document, sourceLabel) {
+export function createMarkdown(article, document, sourceLabel, imagePaths = new Map()) {
   const content = document.createElement('div');
   content.innerHTML = article.content;
   content.querySelectorAll('script, style, iframe, form').forEach((node) => node.remove());
@@ -15,7 +15,8 @@ export function createMarkdown(article, document, sourceLabel) {
         const url = new URL(node.getAttribute(attribute), article.baseUrl);
 
         if (['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol)) {
-          node.setAttribute(attribute, url.href);
+          const path = node.tagName === 'IMG' ? imagePaths.get(url.href) : undefined;
+          node.setAttribute(attribute, path ?? url.href);
         } else {
           node.removeAttribute(attribute);
         }

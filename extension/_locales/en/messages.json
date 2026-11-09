@@ -2,7 +2,12 @@
   "convert": { "message": "Convert" },
   "previewLabel": { "message": "Markdown preview" },
   "copy": { "message": "Copy" },
-  "download": { "message": "Download .md" },
+  "download": { "message": "Download ZIP" },
+  "preparingArchive": { "message": "Downloading images and preparing ZIP… Keep this window open." },
+  "archiveMissingImages": {
+    "message": "ZIP download started. Images not saved: $COUNT$. Original links remain; see missing-images.txt in the archive.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
   "sourceLabel": { "message": "Source" },
   "copied": { "message": "Copied to clipboard." },
   "copyError": {
@@ -32,7 +37,7 @@
     "message": "Main content"
   },
   "footer": {
-    "message": "Conversion runs locally. Images remain links to their original URLs."
+    "message": "ZIP includes available images. Copy uses original image URLs. Keep this window open while preparing ZIP."
   },
   "conversionAvailable": {
     "message": "Conversion is possible"

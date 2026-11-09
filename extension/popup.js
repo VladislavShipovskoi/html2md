@@ -1,4 +1,5 @@
 import { createMarkdown, markdownFilename } from './markdown.js';
+import { imageUrls, fetchImages, createArchive } from './image-archive.js';
 
 const statusEl = document.querySelector('#status');
 const messageEl = document.querySelector('#message');
@@ -7,6 +8,7 @@ const t = (key, substitutions) => chrome.i18n.getMessage(key, substitutions);
 const locale = chrome.i18n.getMessage('@@ui_locale').replaceAll('_', '-');
 let currentArticle;
 let markdown = '';
+let sourceTabId;
 const convertButton = document.querySelector('#convert');
 const actionMessage = document.querySelector('#action-message');
 
@@ -31,19 +33,46 @@ document.querySelector('#copy').addEventListener('click', async () => {
   }
 });
 
-document.querySelector('#download').addEventListener('click', async () => {
-  const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }));
+const downloadButton = document.querySelector('#download');
+downloadButton.addEventListener('click', async () => {
+  let url;
+  downloadButton.disabled = true;
+  actionMessage.textContent = t('preparingArchive');
   try {
+    const urls = imageUrls(currentArticle, document);
+    let images = [];
+
+    if (urls.length) {
+      try {
+        const [{ result } = {}] = await chrome.scripting.executeScript({
+          target: { tabId: sourceTabId },
+          func: fetchImages,
+          args: [urls],
+        });
+        images = result ?? urls.map((url) => ({ url, failed: true }));
+      } catch {
+        images = urls.map((url) => ({ url, failed: true }));
+      }
+    }
+
+    const archive = createArchive(currentArticle, images, document, t('sourceLabel'));
+    url = URL.createObjectURL(new Blob([archive.bytes], { type: 'application/zip' }));
     await chrome.downloads.download({
       url,
-      filename: markdownFilename(currentArticle.title),
+      filename: markdownFilename(currentArticle.title).replace(/\.md$/, '.zip'),
       conflictAction: 'uniquify',
     });
-    actionMessage.textContent = t('downloadStarted');
+    actionMessage.textContent = archive.failedCount
+      ? t('archiveMissingImages', String(archive.failedCount))
+      : t('downloadStarted');
   } catch {
     actionMessage.textContent = t('downloadError');
   } finally {
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    downloadButton.disabled = false;
+
+    if (url) {
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
   }
 });
 
@@ -113,6 +142,7 @@ async function analyzePage() {
         title: result.title || tab.title || t('untitled'),
       };
       convertButton.hidden = false;
+      sourceTabId = tab.id;
     }
   } catch {
     showResult(false, t('accessError'));

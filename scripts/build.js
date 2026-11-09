@@ -16,6 +16,7 @@ await mkdir(outputDirectory, { recursive: true });
 await cp(sourceDirectory, outputDirectory, { recursive: true });
 await rm(resolve(outputDirectory, 'page-analysis.js'));
 await rm(resolve(outputDirectory, 'markdown.js'));
+await rm(resolve(outputDirectory, 'image-archive.js'));
 await build({
   absWorkingDir: projectRoot,
   tsconfigRaw: {},
