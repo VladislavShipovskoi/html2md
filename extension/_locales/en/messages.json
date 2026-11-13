@@ -1,4 +1,8 @@
 {
+  "darkTheme": { "message": "Dark theme" },
+  "switchToLightTheme": { "message": "Switch to light theme" },
+  "switchToDarkTheme": { "message": "Switch to dark theme" },
+  "themeSaveError": { "message": "Could not save the theme. Try again." },
   "convert": {
     "message": "Convert"
   },

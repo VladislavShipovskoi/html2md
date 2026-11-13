@@ -4,6 +4,7 @@ import { prepareNotionExport } from '../../core/notion/index.js';
 import { exportNotionArticle } from '../../core/notion/index.js';
 import { initializeLocalization } from '../shared/localization.js';
 import { createMessageFormatter } from '../shared/messages.js';
+import { initializeTheme } from '../shared/theme.js';
 
 export async function initializePopup({
   document,
@@ -12,11 +13,13 @@ export async function initializePopup({
   repository,
   notionApi,
   createId,
+  themeStorage,
 }) {
   const statusEl = document.querySelector('#status');
   const messageEl = document.querySelector('#message');
   const mainEl = document.querySelector('main');
   const { t, locale } = initializeLocalization(document, i18n);
+  await initializeTheme({ document, storage: themeStorage, t });
   const messages = createMessageFormatter(t);
   let currentArticle;
   let pageTitle;

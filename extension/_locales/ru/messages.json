@@ -1,4 +1,8 @@
 {
+  "darkTheme": { "message": "Тёмная тема" },
+  "switchToLightTheme": { "message": "Включить светлую тему" },
+  "switchToDarkTheme": { "message": "Включить тёмную тему" },
+  "themeSaveError": { "message": "Не удалось сохранить тему. Попробуйте ещё раз." },
   "convert": {
     "message": "Конвертировать"
   },

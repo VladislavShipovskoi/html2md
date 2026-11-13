@@ -2,9 +2,11 @@ import { failure } from '../../core/index.js';
 import { initializeLocalization } from '../shared/localization.js';
 import { createMessageFormatter } from '../shared/messages.js';
 import { renderIntegrationForm, renderIntegrationTable } from './views.js';
+import { initializeTheme } from '../shared/theme.js';
 
-export async function initializeOptions({ document, i18n, repository }) {
+export async function initializeOptions({ document, i18n, repository, themeStorage }) {
   const { t } = initializeLocalization(document, i18n);
+  await initializeTheme({ document, storage: themeStorage, t });
   const messages = createMessageFormatter(t);
   const view = document.defaultView;
   const get = (id) => document.getElementById(id);
