@@ -1,22 +1,42 @@
 {
-  "convert": { "message": "Конвертировать" },
-  "previewLabel": { "message": "Предпросмотр Markdown" },
-  "copy": { "message": "Скопировать" },
-  "download": { "message": "Скачать ZIP" },
-  "preparingArchive": { "message": "Скачиваем изображения и готовим ZIP… Не закрывайте это окно." },
+  "convert": {
+    "message": "Конвертировать"
+  },
+  "previewLabel": {
+    "message": "Предпросмотр Markdown"
+  },
+  "copy": {
+    "message": "Копировать Markdown"
+  },
+  "download": {
+    "message": "Скачать ZIP с изображениями"
+  },
+  "preparingArchive": {
+    "message": "Скачиваем изображения и готовим ZIP… Не закрывайте это окно."
+  },
   "archiveMissingImages": {
     "message": "Скачивание ZIP началось. Не сохранено изображений: $COUNT$. Исходные ссылки оставлены; список — в missing-images.txt внутри архива.",
-    "placeholders": { "count": { "content": "$1" } }
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
-  "sourceLabel": { "message": "Источник" },
-  "copied": { "message": "Скопировано в буфер обмена." },
+  "sourceLabel": {
+    "message": "Источник"
+  },
+  "copied": {
+    "message": "Скопировано в буфер обмена."
+  },
   "copyError": {
     "message": "Не удалось скопировать. Выделите и скопируйте текст предпросмотра вручную."
   },
   "conversionError": {
     "message": "Не удалось преобразовать извлечённый текст в Markdown."
   },
-  "downloadStarted": { "message": "Скачивание началось." },
+  "downloadStarted": {
+    "message": "Скачивание началось."
+  },
   "downloadError": {
     "message": "Не удалось начать скачивание. Попробуйте снова."
   },
@@ -42,7 +62,7 @@
     "message": "ZIP содержит доступные изображения. При копировании остаются исходные ссылки. Не закрывайте окно во время подготовки ZIP."
   },
   "conversionAvailable": {
-    "message": "Конвертация возможна"
+    "message": "Статья готова"
   },
   "conversionUnavailable": {
     "message": "Конвертация недоступна"
@@ -76,5 +96,225 @@
   },
   "articleNotFound": {
     "message": "Не удалось выделить основной текст. Возможно, для этой страницы нужен другой способ извлечения. Попробуйте снова после загрузки содержимого."
+  },
+  "notionSettings": {
+    "message": "Подключение Notion"
+  },
+  "notionCreateIntegration": {
+    "message": "Создать API токен Notion"
+  },
+  "notionToken": {
+    "message": "API токен"
+  },
+  "notionParent": {
+    "message": "Ссылка или ID родительской страницы"
+  },
+  "notionPrivacy": {
+    "message": "API токен хранится только в памяти сеанса браузера без записи на диск и синхронизации. После перезапуска Chrome или перезагрузки расширения введите его заново. Это уменьшает риск утечки с диска, но не защищает от компрометации работающего браузера. Статья отправляется напрямую в Notion при сохранении."
+  },
+  "notionForget": {
+    "message": "Забыть подключение"
+  },
+  "notionSave": {
+    "message": "Сохранить в Notion"
+  },
+  "notionOpenPage": {
+    "message": "Открыть страницу в Notion"
+  },
+  "notionSaving": {
+    "message": "Сохранение в Notion… Не закрывайте окно."
+  },
+  "notionSaved": {
+    "message": "Страница сохранена в Notion."
+  },
+  "notionMissingToken": {
+    "message": "Введите API токен."
+  },
+  "notionInvalidParent": {
+    "message": "Введите корректную ссылку или ID родительской страницы Notion."
+  },
+  "notionUnauthorized": {
+    "message": "Неверный токен Notion. Проверьте настройки подключения."
+  },
+  "notionForbidden": {
+    "message": "Notion запретил доступ. Проверьте права интеграции и доступ к странице."
+  },
+  "notionNotFound": {
+    "message": "Родительская страница не найдена или недоступна интеграции."
+  },
+  "notionRateLimited": {
+    "message": "Достигнут лимит запросов Notion. Подождите минуту перед повторной попыткой."
+  },
+  "notionSaveError": {
+    "message": "Не удалось подтвердить сохранение. Проверьте Notion перед повторной попыткой, чтобы избежать дубликатов."
+  },
+  "notionPartialSave": {
+    "message": "Страница создана. Откройте её или повторите сохранение содержимого в этом окне."
+  },
+  "notionSettingsError": {
+    "message": "Не удалось получить доступ к настройкам Notion."
+  },
+  "notionForgotten": {
+    "message": "Сеансовый токен удалён. Родительская страница сохранена."
+  },
+  "settingsTitle": {
+    "message": "Настройки"
+  },
+  "settingsSave": {
+    "message": "Сохранить изменения"
+  },
+  "notionDisconnect": {
+    "message": "Отключить"
+  },
+  "notionConnected": {
+    "message": "Токен сохранён"
+  },
+  "notionDisconnected": {
+    "message": "Нужен токен"
+  },
+  "notionSettingsSaved": {
+    "message": "Настройки сохранены для текущего сеанса."
+  },
+  "notionNeedsSettings": {
+    "message": "Подключите Notion в настройках перед сохранением статьи."
+  },
+  "notionTokenHelp": {
+    "message": "После перезапуска Chrome введите токен заново. Оставьте поле пустым, чтобы сохранить текущий сеансовый токен."
+  },
+  "integrationsTitle": {
+    "message": "Интеграции"
+  },
+  "integrationAdd": {
+    "message": "Добавить интеграцию"
+  },
+  "integrationsEmpty": {
+    "message": "Нет сохранённых интеграций."
+  },
+  "integrationName": {
+    "message": "Название"
+  },
+  "integrationType": {
+    "message": "Сервис"
+  },
+  "integrationStatus": {
+    "message": "Статус сеанса"
+  },
+  "integrationActions": {
+    "message": "Действия"
+  },
+  "integrationDelete": {
+    "message": "Удалить"
+  },
+  "integrationDetails": {
+    "message": "Настройки интеграции"
+  },
+  "integrationsBack": {
+    "message": "К списку интеграций"
+  },
+  "integrationChoose": {
+    "message": "Интеграция"
+  },
+  "integrationNameRequired": {
+    "message": "Введите название интеграции."
+  },
+  "integrationNotFound": {
+    "message": "Интеграция не найдена."
+  },
+  "notionImageError": {
+    "message": "Не удалось сохранить изображение: $REASON$.",
+    "placeholders": {
+      "reason": {
+        "content": "$1"
+      }
+    }
+  },
+  "imageHttp": {
+    "message": "источник вернул HTTP $STATUS$",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "imageTabAccess": {
+    "message": "не удалось получить доступ к исходной вкладке; заново откройте расширение на странице статьи"
+  },
+  "imageNetwork": {
+    "message": "сетевая ошибка или запрет доступа к изображению"
+  },
+  "imageTimeout": {
+    "message": "истекло время скачивания"
+  },
+  "imageFormat": {
+    "message": "неподдерживаемый формат или адрес изображения"
+  },
+  "imageSize": {
+    "message": "изображение превышает 10 МиБ"
+  },
+  "imageTotalSize": {
+    "message": "превышен общий лимит скачивания 50 МиБ"
+  },
+  "imageEmpty": {
+    "message": "источник вернул пустое изображение"
+  },
+  "imageLocation": {
+    "message": "Notion не поддерживает изображения в этом месте"
+  },
+  "imageUpload": {
+    "message": "Notion не смог принять изображение"
+  },
+  "notionImageUncertain": {
+    "message": "Не удалось подтвердить операцию. Проверьте страницу Notion перед повторным сохранением. Это окно не будет повторять неподтверждённую вставку."
+  },
+  "notionDownloadingImages": {
+    "message": "Скачивание изображений $COUNT$/$TOTAL$… Не закрывайте окно.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "notionUploadingImages": {
+    "message": "Загрузка изображений в Notion $COUNT$/$TOTAL$… Не закрывайте окно.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "notionFinishingImages": {
+    "message": "Завершение сохранения… Не закрывайте окно."
+  },
+  "notionSavedImageErrors": {
+    "message": "Статья сохранена. Изображений с ошибками: $COUNT$. Причины выделены жирным в статье.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "notionSetupHelp": {
+    "message": "Создайте токен Notion по ссылке ниже, затем скопируйте его и вставьте в поле «API токен»."
+  },
+  "integrationsDescription": {
+    "message": "Выберите, куда сохранять статьи."
+  },
+  "sessionTokenNote": {
+    "message": "Токены хранятся до перезапуска браузера."
+  },
+  "notionSetupTitle": {
+    "message": "Как подключить Notion?"
+  },
+  "tokenPlaceholder": {
+    "message": "Введите токен интеграции"
+  },
+  "tokenReplacePlaceholder": {
+    "message": "Введите новый токен для замены"
   }
 }

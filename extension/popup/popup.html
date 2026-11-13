@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="extensionName">HTML to Markdown</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+    <link rel="stylesheet" href="popup.css" />
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <img src="../icons/icon-32.png" width="32" height="32" alt="" />
+      <h1 data-i18n="extensionName">HTML to Markdown</h1>
+      <div class="header-actions">
+        <button id="settings-open" class="icon-button" type="button">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7">
+            <path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z" />
+            <circle cx="12" cy="12" r="3" /></svg
+          ><span class="sr-only" data-i18n="settingsTitle"></span>
+        </button>
+      </div>
+    </header>
+    <main aria-live="polite" aria-busy="true">
+      <p id="status" class="status" data-state="loading" data-i18n="checking"></p>
+      <p id="message" data-i18n="checkingDescription"></p>
+      <dl id="details" hidden>
+        <dt class="sr-only" data-i18n="pageLabel"></dt>
+        <dd id="page-title"></dd>
+        <dt class="sr-only" data-i18n="sourceLabel"></dt>
+        <dd id="page-source"></dd>
+        <dt class="sr-only" data-i18n="textLabel"></dt>
+        <dd id="text-count"></dd>
+      </dl>
+      <button id="convert" type="button" data-i18n="convert" hidden></button>
+      <section id="output" hidden>
+        <label for="preview" data-i18n="previewLabel"></label>
+        <textarea id="preview" readonly spellcheck="false"></textarea>
+        <div class="actions">
+          <button id="copy" type="button" data-i18n="copy"></button>
+          <button id="download" class="secondary" type="button" data-i18n="download"></button>
+        </div>
+        <section class="notion-section">
+          <h2 data-i18n="notionSave"></h2>
+          <label for="integration-select" data-i18n="integrationChoose"></label>
+          <select id="integration-select"></select>
+          <button id="notion-save" class="secondary" type="button" data-i18n="notionSave"></button>
+          <p id="notion-message" role="status"></p>
+          <progress id="notion-progress" aria-describedby="notion-message" hidden></progress>
+          <button id="notion-settings" type="button" data-i18n="settingsTitle" hidden></button>
+          <a
+            id="notion-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="notionOpenPage"
+            hidden></a>
+        </section>
+      </section>
+      <p id="action-message" role="status"></p>
+    </main>
+    <footer data-i18n="footer"></footer>
+  </body>
+</html>

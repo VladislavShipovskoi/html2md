@@ -1,19 +1,19 @@
+import { mockStorage } from './storage-helper.js';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { JSDOM } from 'jsdom';
 import { unzipSync, strFromU8 } from 'fflate';
-import { initializePopup } from '../extension/popup.js';
-
-const html = await readFile(new URL('../extension/popup.html', import.meta.url), 'utf8');
+import { initializePopup } from '../extension/popup/popup.js';
+import { createRuntimeServices } from '../extension/shared/runtime.js';
+const html = await readFile(new URL('../extension/popup/popup.html', import.meta.url), 'utf8');
 const flush = () => new Promise((resolve) => setImmediate(resolve));
-
 async function openPopup(t, options = {}) {
   const { window } = new JSDOM(html);
   const locale = options.locale ?? 'en';
   const messages = JSON.parse(
     await readFile(
-      new URL(`../extension/_locales/${locale}/messages.json`, import.meta.url),
+      new URL('../extension/_locales/' + locale + '/messages.json', import.meta.url),
       'utf8'
     )
   );
@@ -22,8 +22,15 @@ async function openPopup(t, options = {}) {
       return locale;
     }
 
-    assert.ok(messages[key], `Missing translation: ${key}`);
-    return messages[key].message.replace('$COUNT$', value ?? '');
+    assert.ok(messages[key], 'Missing translation: ' + key);
+    const substitutions = Array.isArray(value) ? value : [value];
+    return messages[key].message.replace(
+      /\$([A-Z]+)\$/g,
+      (_, name) =>
+        substitutions[
+          Number(messages[key].placeholders[name.toLowerCase()].content.slice(1)) - 1
+        ] ?? ''
+    );
   };
   const article = {
     supported: true,
@@ -36,8 +43,18 @@ async function openPopup(t, options = {}) {
     ...options.article,
   };
   const state = { downloads: [], revoked: [], timers: [], copied: null, blob: null };
+  const { storage, locks } = mockStorage(
+    { notionParentId: options.notion?.parentId },
+    { notionToken: options.notion?.token }
+  );
   const chrome = {
+    storage,
     i18n: { getMessage: translate },
+    runtime: {
+      openOptionsPage: async () => {
+        state.optionsOpened = true;
+      },
+    },
     tabs: {
       query: async () =>
         options.tabs ?? [{ id: 7, url: 'https://example.com', title: options.tabTitle }],
@@ -53,20 +70,20 @@ async function openPopup(t, options = {}) {
         }
 
         assert.equal(request.target.tabId, 7);
+        assert.equal(request.world, 'MAIN');
+        state.imageRequest = request;
 
         if (options.imageError) {
           throw new Error('Tab closed');
         }
 
-        return (
-          options.imageResponse ?? [
-            {
-              result: [
-                { url: 'https://example.com/image.png', type: 'image/png', bytes: [1, 2, 3] },
-              ],
-            },
-          ]
-        );
+        if (options.imageResponse) {
+          return options.imageResponse;
+        }
+
+        return [
+          { result: request.args[0].map((url) => ({ url, type: 'image/png', bytes: [1, 2, 3] })) },
+        ];
       },
     },
     downloads: {
@@ -80,10 +97,23 @@ async function openPopup(t, options = {}) {
       },
     },
   };
-  const values = {
+  class PopupURL extends URL {
+    static createObjectURL(blob) {
+      state.blob = blob;
+      return 'blob:archive';
+    }
+    static revokeObjectURL(url) {
+      state.revoked.push(url);
+    }
+  }
+  const services = createRuntimeServices({
     document: window.document,
     chrome,
+    crypto,
+    URL: PopupURL,
+    Blob,
     navigator: {
+      locks,
       clipboard: {
         writeText: async (text) => {
           if (options.copyError) {
@@ -94,36 +124,17 @@ async function openPopup(t, options = {}) {
         },
       },
     },
-  };
-  const descriptors = new Map(
-    Object.keys(values).map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)])
-  );
-
-  for (const [key, value] of Object.entries(values)) {
-    Object.defineProperty(globalThis, key, { configurable: true, value });
-  }
-
-  t.after(() => {
-    window.close();
-
-    for (const [key, descriptor] of descriptors) {
-      if (descriptor) {
-        Object.defineProperty(globalThis, key, descriptor);
-      } else {
-        delete globalThis[key];
-      }
-    }
+    fetch: async (...args) => {
+      assert.ok(state.fetcher, 'Unexpected API request');
+      return state.fetcher(...args);
+    },
+    setTimeout: (callback, delay) => {
+      state.timers.push({ callback, delay });
+      return 1;
+    },
   });
-  t.mock.method(URL, 'createObjectURL', (blob) => {
-    state.blob = blob;
-    return 'blob:archive';
-  });
-  t.mock.method(URL, 'revokeObjectURL', (url) => state.revoked.push(url));
-  t.mock.method(globalThis, 'setTimeout', (callback, delay) => {
-    state.timers.push({ callback, delay });
-    return 1;
-  });
-  await initializePopup();
+  t.after(() => window.close());
+  await initializePopup(services);
   await flush();
   const element = (selector) => window.document.querySelector(selector);
   return {
@@ -137,6 +148,42 @@ async function openPopup(t, options = {}) {
     },
   };
 }
+
+test('Notion retries content on the created page using a session token', async (t) => {
+  const id = '123456781234123412341234567890ab';
+  const popup = await openPopup(t, {
+    notion: { token: 'test-token', parentId: id },
+    tabTitle: 'Original page title | Website',
+  });
+  const requests = [];
+  let writes = 0;
+  popup.state.fetcher = async (url, options) => {
+    requests.push({ url, body: JSON.parse(options.body) });
+
+    if (url.endsWith('/markdown') && ++writes === 1) {
+      return { ok: false, status: 400, json: async () => ({}) };
+    }
+
+    return { ok: true, json: async () => ({ id }) };
+  };
+  await popup.click('#convert');
+  await popup.click('#notion-save');
+  assert.equal(popup.element('#notion-save').disabled, false);
+  assert.equal(popup.element('#notion-link').hidden, false);
+  await popup.click('#notion-save');
+  assert.equal(requests.filter((r) => r.url.endsWith('/pages')).length, 1);
+  assert.equal(
+    requests[0].body.properties.title.title[0].text.content,
+    'Original page title | Website'
+  );
+  assert.equal(writes, 2);
+  assert.ok(requests[2].body.replace_content.new_str.includes('Example text'));
+  assert.equal(popup.element('#notion-save').disabled, true);
+  assert.equal(popup.element('#notion-message').textContent, popup.translate('notionSaved'));
+  await popup.click('#settings-open');
+  assert.equal(popup.state.optionsOpened, true);
+  assert.equal(popup.element('#notion-token'), null);
+});
 
 for (const locale of ['en', 'ru']) {
   test(`popup: conversion, copying, ZIP and localization (${locale})`, async (t) => {
@@ -254,3 +301,66 @@ test('popup restores the download button and releases URL after download rejecti
   popup.state.timers[0].callback();
   assert.deepEqual(popup.state.revoked, ['blob:archive']);
 });
+
+test('Notion without a session token prompts settings and makes no requests', async (t) => {
+  const popup = await openPopup(t);
+  popup.state.fetcher = () => {
+    assert.fail('Unexpected API call');
+  };
+  await popup.click('#convert');
+  await popup.click('#notion-save');
+  assert.equal(
+    popup.element('#notion-message').textContent,
+    popup.translate('notionNeedsSettings')
+  );
+});
+
+for (const locale of ['en', 'ru']) {
+  test(`Notion image errors are localized and source tab receives no token (${locale})`, async (t) => {
+    const id = '123456781234123412341234567890ab';
+    const url = 'https://example.com/missing.png';
+    const popup = await openPopup(t, {
+      locale,
+      notion: { token: 'private-token', parentId: id },
+      article: { content: `<p>Text</p><img src="${url}">` },
+      imageResponse: [{ result: [{ url, failed: true, reason: 'http', status: 404 }] }],
+    });
+    let marker;
+    let errorText;
+    popup.state.fetcher = async (request, options) => {
+      const body = options.body ? JSON.parse(options.body) : undefined;
+      let result = {};
+
+      if (request.endsWith('/pages')) {
+        result = { id };
+      } else if (request.endsWith('/markdown')) {
+        marker = body.replace_content.new_str.match(/H2MDIMAGE[a-zA-Z0-9]+END/)[0];
+      } else if (options.method === 'GET') {
+        result = {
+          results: [
+            {
+              id: 'marker',
+              type: 'paragraph',
+              paragraph: { rich_text: [{ text: { content: marker } }] },
+            },
+          ],
+        };
+      } else {
+        errorText = body.paragraph.rich_text[0];
+      }
+
+      return { ok: true, json: async () => result };
+    };
+    await popup.click('#convert');
+    await popup.click('#notion-save');
+    assert.equal(popup.element('#notion-save').disabled, true);
+    assert.equal(
+      popup.element('#notion-message').textContent,
+      popup.translate('notionSavedImageErrors', '1')
+    );
+    assert.equal(errorText.annotations.bold, true);
+    assert.ok(errorText.text.content.includes('404'));
+    assert.deepEqual(popup.state.imageRequest.args, [[url], 50 * 1024 * 1024]);
+    assert.ok(!JSON.stringify(popup.state.imageRequest).includes('private-token'));
+  });
+}

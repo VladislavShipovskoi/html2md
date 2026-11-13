@@ -1,23 +1,45 @@
 {
-  "convert": { "message": "Convert" },
-  "previewLabel": { "message": "Markdown preview" },
-  "copy": { "message": "Copy" },
-  "download": { "message": "Download ZIP" },
-  "preparingArchive": { "message": "Downloading images and preparing ZIP… Keep this window open." },
+  "convert": {
+    "message": "Convert"
+  },
+  "previewLabel": {
+    "message": "Markdown preview"
+  },
+  "copy": {
+    "message": "Copy Markdown"
+  },
+  "download": {
+    "message": "Download ZIP with images"
+  },
+  "preparingArchive": {
+    "message": "Downloading images and preparing ZIP… Keep this window open."
+  },
   "archiveMissingImages": {
     "message": "ZIP download started. Images not saved: $COUNT$. Original links remain; see missing-images.txt in the archive.",
-    "placeholders": { "count": { "content": "$1" } }
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
-  "sourceLabel": { "message": "Source" },
-  "copied": { "message": "Copied to clipboard." },
+  "sourceLabel": {
+    "message": "Source"
+  },
+  "copied": {
+    "message": "Copied to clipboard."
+  },
   "copyError": {
     "message": "Could not copy. Select and copy the preview text manually."
   },
   "conversionError": {
     "message": "Could not convert the extracted content to Markdown."
   },
-  "downloadStarted": { "message": "Download started." },
-  "downloadError": { "message": "Could not start the download. Try again." },
+  "downloadStarted": {
+    "message": "Download started."
+  },
+  "downloadError": {
+    "message": "Could not start the download. Try again."
+  },
   "extensionName": {
     "message": "HTML to Markdown"
   },
@@ -40,7 +62,7 @@
     "message": "ZIP includes available images. Copy uses original image URLs. Keep this window open while preparing ZIP."
   },
   "conversionAvailable": {
-    "message": "Conversion is possible"
+    "message": "Article ready"
   },
   "conversionUnavailable": {
     "message": "Conversion is unavailable"
@@ -74,5 +96,225 @@
   },
   "articleNotFound": {
     "message": "No main content could be extracted. This page may need a different extraction method. Try again once the content has loaded."
+  },
+  "notionSettings": {
+    "message": "Notion connection"
+  },
+  "notionCreateIntegration": {
+    "message": "Create a Notion API key"
+  },
+  "notionToken": {
+    "message": "Integration token"
+  },
+  "notionParent": {
+    "message": "Parent page URL or ID"
+  },
+  "notionPrivacy": {
+    "message": "The token is kept only in browser session memory, without disk storage or sync. Enter it again after restarting Chrome or reloading the extension. This reduces disk exposure but does not protect a compromised running browser. Article content is sent directly to Notion when you save."
+  },
+  "notionForget": {
+    "message": "Forget connection"
+  },
+  "notionSave": {
+    "message": "Save to Notion"
+  },
+  "notionOpenPage": {
+    "message": "Open page in Notion"
+  },
+  "notionSaving": {
+    "message": "Saving to Notion? Keep this window open."
+  },
+  "notionSaved": {
+    "message": "Page saved to Notion."
+  },
+  "notionMissingToken": {
+    "message": "Enter your Personal access token."
+  },
+  "notionInvalidParent": {
+    "message": "Enter a valid Notion parent page URL or ID."
+  },
+  "notionUnauthorized": {
+    "message": "Invalid Notion token. Check the connection settings."
+  },
+  "notionForbidden": {
+    "message": "Notion denied access. Check the integration capabilities and page access."
+  },
+  "notionNotFound": {
+    "message": "Parent page not found or not shared with the integration."
+  },
+  "notionRateLimited": {
+    "message": "Notion request limit reached. Wait a minute before trying again."
+  },
+  "notionSaveError": {
+    "message": "Could not confirm saving. Check Notion before trying again to avoid duplicates."
+  },
+  "notionPartialSave": {
+    "message": "The page was created. You can open it or retry saving its contents in this popup."
+  },
+  "notionSettingsError": {
+    "message": "Could not access the saved Notion settings."
+  },
+  "notionForgotten": {
+    "message": "Session token removed. Parent page retained."
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "settingsSave": {
+    "message": "Save changes"
+  },
+  "notionDisconnect": {
+    "message": "Disconnect"
+  },
+  "notionConnected": {
+    "message": "Token saved"
+  },
+  "notionDisconnected": {
+    "message": "Token needed"
+  },
+  "notionSettingsSaved": {
+    "message": "Settings saved for this session."
+  },
+  "notionNeedsSettings": {
+    "message": "Connect Notion in Settings before saving an article."
+  },
+  "notionTokenHelp": {
+    "message": "Enter a token after restarting Chrome. Leave blank to keep the current session token."
+  },
+  "integrationsTitle": {
+    "message": "Integrations"
+  },
+  "integrationAdd": {
+    "message": "Add integration"
+  },
+  "integrationsEmpty": {
+    "message": "No saved integrations."
+  },
+  "integrationName": {
+    "message": "Name"
+  },
+  "integrationType": {
+    "message": "Service"
+  },
+  "integrationStatus": {
+    "message": "Session status"
+  },
+  "integrationActions": {
+    "message": "Actions"
+  },
+  "integrationDelete": {
+    "message": "Delete"
+  },
+  "integrationDetails": {
+    "message": "Integration details"
+  },
+  "integrationsBack": {
+    "message": "Back to integrations"
+  },
+  "integrationChoose": {
+    "message": "Integration"
+  },
+  "integrationNameRequired": {
+    "message": "Enter an integration name."
+  },
+  "integrationNotFound": {
+    "message": "Integration not found."
+  },
+  "notionImageError": {
+    "message": "Could not save image: $REASON$.",
+    "placeholders": {
+      "reason": {
+        "content": "$1"
+      }
+    }
+  },
+  "imageHttp": {
+    "message": "source returned HTTP $STATUS$",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "imageTabAccess": {
+    "message": "could not run image extraction in the source tab; reopen the extension on the article page"
+  },
+  "imageNetwork": {
+    "message": "network error or image access denied"
+  },
+  "imageTimeout": {
+    "message": "download timed out"
+  },
+  "imageFormat": {
+    "message": "unsupported image format or URL"
+  },
+  "imageSize": {
+    "message": "image exceeds 10 MiB"
+  },
+  "imageTotalSize": {
+    "message": "total download limit of 50 MiB exceeded"
+  },
+  "imageEmpty": {
+    "message": "source returned an empty image"
+  },
+  "imageLocation": {
+    "message": "Notion does not support images in this location"
+  },
+  "imageUpload": {
+    "message": "Notion could not accept the image"
+  },
+  "notionImageUncertain": {
+    "message": "Could not confirm the operation. Check the Notion page before saving again. This popup will not repeat an unconfirmed insertion."
+  },
+  "notionDownloadingImages": {
+    "message": "Downloading images $COUNT$/$TOTAL$… Keep this window open.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "notionUploadingImages": {
+    "message": "Uploading images to Notion $COUNT$/$TOTAL$… Keep this window open.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "notionFinishingImages": {
+    "message": "Finishing saving… Keep this window open."
+  },
+  "notionSavedImageErrors": {
+    "message": "Article saved. Images with errors: $COUNT$. Reasons appear in bold in the article.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "notionSetupHelp": {
+    "message": "Create a Notion token using the link below, then copy it and paste it into the “Integration token” field."
+  },
+  "integrationsDescription": {
+    "message": "Choose where to save articles."
+  },
+  "sessionTokenNote": {
+    "message": "Tokens are kept until the browser restarts."
+  },
+  "notionSetupTitle": {
+    "message": "How to connect Notion?"
+  },
+  "tokenPlaceholder": {
+    "message": "Enter an integration token"
+  },
+  "tokenReplacePlaceholder": {
+    "message": "Enter a new token to replace the current one"
   }
 }

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n="settingsTitle">Settings</title>
+    <link rel="stylesheet" href="../shared/styles.css" />
+    <link rel="stylesheet" href="options.css" />
+    <script src="options.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <img src="../icons/icon-32.png" width="32" height="32" alt="" />
+      <h1 data-i18n="settingsTitle"></h1>
+      <div class="header-actions"></div>
+    </header>
+    <main>
+      <section id="integration-list">
+        <div class="section-heading">
+          <div>
+            <h2 data-i18n="integrationsTitle"></h2>
+            <p data-i18n="integrationsDescription"></p>
+          </div>
+          <a href="#new" class="button-link"
+            ><span aria-hidden="true">+</span><span data-i18n="integrationAdd"></span
+          ></a>
+        </div>
+        <p id="integrations-empty" data-i18n="integrationsEmpty"></p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="integrationName"></th>
+                <th data-i18n="integrationType"></th>
+                <th data-i18n="notionParent"></th>
+                <th data-i18n="integrationStatus"></th>
+                <th data-i18n="integrationActions"></th>
+              </tr>
+            </thead>
+            <tbody id="integration-rows"></tbody>
+          </table>
+        </div>
+        <p class="session-note" data-i18n="sessionTokenNote"></p>
+      </section>
+      <section id="integration-detail" hidden>
+        <a href="#" class="back-link">&larr; <span data-i18n="integrationsBack"></span></a>
+        <div class="detail-heading">
+          <h2 id="detail-title"></h2>
+          <p id="connection-status" class="badge" role="status"></p>
+        </div>
+        <form id="settings-form">
+          <label for="integration-name" data-i18n="integrationName"></label>
+          <input id="integration-name" type="text" required maxlength="120" />
+          <label for="integration-type" data-i18n="integrationType"></label>
+          <select id="integration-type" disabled>
+            <option>Notion</option>
+          </select>
+          <label for="notion-token" data-i18n="notionToken"></label>
+          <input id="notion-token" type="password" autocomplete="off" spellcheck="false" />
+          <p class="help" data-i18n="notionTokenHelp"></p>
+          <label for="notion-parent" data-i18n="notionParent"></label>
+          <input id="notion-parent" type="text" autocomplete="off" spellcheck="false" required />
+          <details>
+            <summary data-i18n="notionSetupTitle"></summary>
+            <p data-i18n="notionSetupHelp"></p>
+            <a
+              href="https://app.notion.com/developers/tokens"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="notionCreateIntegration"></a>
+          </details>
+          <p class="privacy-note" data-i18n="notionPrivacy"></p>
+          <div class="actions">
+            <button id="settings-save" type="submit" data-i18n="settingsSave"></button>
+            <button
+              id="detail-delete"
+              class="danger"
+              type="button"
+              data-i18n="integrationDelete"></button>
+          </div>
+        </form>
+      </section>
+      <p id="settings-message" role="status"></p>
+    </main>
+  </body>
+</html>
