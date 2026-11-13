@@ -1,7 +1,6 @@
 # HTML to Markdown
 
 [![CI](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml)
-[![Tests](https://github.com/VladislavShipovskoi/html2md/actions/workflows/tests.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/tests.yml)
 
 Simple chrome extension that extracts the main content of a web page and converts it to Markdown. Preview and copy the result, download a ZIP with images, or save an articleto Notion.
 
@@ -54,7 +53,7 @@ The extension enforces its own image limits: 10 MiB per image, 50 MiB of total t
 
 ## Build
 
-Use Node.js 22.22.2+ or 24.15.0+; CI tests the latest Node.js 22 and 24 releases.
+Use Node.js 24.15.0+ (24.x) or 26.x; CI tests the latest releases of both supported branches.
 
 ```sh
 npm ci

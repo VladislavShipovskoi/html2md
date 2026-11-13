@@ -50,4 +50,4 @@ duplicated.
 
 External runtime dependencies are `@mozilla/readability`, `turndown`,
 `turndown-plugin-gfm`, and `fflate`, managed by the repository's root package file.
-Standard Web APIs used by core are available in modern browsers and Node.js 22/24.
+Standard Web APIs used by core are available in modern browsers and Node.js 24/26.
