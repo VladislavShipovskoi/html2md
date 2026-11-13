@@ -1,23 +1,23 @@
 # Shared core
 
-Portable ES modules for the extension, a future CLI, or a separate web application.
+Portable TypeScript modules for the extension, a future CLI, or a separate web application.
 This directory has no imports from `extension/` and does not read global DOM or
 Chrome objects. It is source code within this repository, not a published package.
 
 ## Entry points
 
-- `index.js`: article extraction, code normalization, Markdown, image downloads,
+- `index.ts`: article extraction, code normalization, Markdown, image downloads,
   ZIP preparation, and safe errors.
-- `images/index.js`: image operations without loading content converters.
-- `notion/index.js`: page ID validation, token normalization, API client, content
+- `images/index.ts`: image operations without loading content converters.
+- `notion/index.ts`: page ID validation, token normalization, API client, content
   preparation, export state, and recovery workflow.
-- `types.js` and `notion/export-state.js`: JSDoc contracts.
+- `types.ts` and `notion/export-state.ts`: TypeScript interfaces and state contracts.
 
 Supply a `Document` from a browser, `DOMParser`, or JSDOM. JSDOM remains a caller
 dependency and is not bundled into the extension.
 
-```js
-import { analyzePage, createMarkdown, exportArchive, fetchImages } from './core/index.js';
+```ts
+import { analyzePage, createMarkdown, exportArchive, fetchImages } from './core/index.ts';
 
 const article = analyzePage(document);
 if (article.supported && article.articleFound) {
