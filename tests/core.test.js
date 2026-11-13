@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import { JSDOM } from 'jsdom';
 import { unzipSync, strFromU8 } from 'fflate';
 import { analyzePage, createMarkdown, exportArchive, fetchImages } from '../core/index.js';
+import { prepareNotionExport, exportNotionArticle, createNotionApi } from '../core/notion/index.js';
 
 test('public core API extracts HTML and creates Markdown and ZIP in Node without global DOM', async () => {
   assert.equal(typeof globalThis.document, 'undefined');
@@ -48,6 +49,49 @@ test('public core API extracts HTML and creates Markdown and ZIP in Node without
   }
 });
 
+test('Notion public workflow accepts an API without browser or localization globals', async () => {
+  const { window } = new JSDOM('');
+  try {
+    const state = prepareNotionExport(
+      {
+        title: 'CLI',
+        content: '<p>Text</p>',
+        url: 'https://example.com',
+        baseUrl: 'https://example.com',
+      },
+      window.document,
+      {
+        sourceLabel: 'Source',
+        createId: () => 'test',
+        formatImageError: ({ reason }) => `Image error: ${reason}`,
+      }
+    );
+    let saved;
+    await exportNotionArticle({
+      state,
+      title: 'CLI',
+      parentId: 'parent',
+      api: {
+        createPage: async () => ({ id: 'page' }),
+        writeMarkdown: async (_id, text) => {
+          saved = text;
+        },
+      },
+      downloadImages: async () => [],
+      formatImageError: ({ reason }) => reason,
+    });
+    assert.ok(saved.startsWith('# CLI'));
+    assert.equal(state.writing, 'confirmed');
+    assert.equal(
+      typeof createNotionApi({ token: 'unused', fetcher: async () => {}, sleep: async () => {} })
+        .uploadImage,
+      'function'
+    );
+  } finally {
+    window.close();
+  }
+});
+
 test('every relative import in core stays inside core, including dynamic imports', async () => {
   const root = fileURLToPath(new URL('../core/', import.meta.url));
   const packages = new Set(['@mozilla/readability', 'turndown', 'turndown-plugin-gfm', 'fflate']);
@@ -75,4 +119,25 @@ test('every relative import in core stays inside core, including dynamic imports
       }
     }
   }
+});
+
+test('Notion transport and retry timing are supplied explicitly by the host', async () => {
+  const waits = [];
+  let calls = 0;
+  const api = createNotionApi({
+    token: 'test-token',
+    sleep: async (ms) => waits.push(ms),
+    fetcher: async () => {
+      calls++;
+      return calls === 1
+        ? { ok: false, status: 429, headers: { get: () => '2' }, json: async () => ({}) }
+        : { ok: true, json: async () => ({ id: 'created-page' }) };
+    },
+  });
+  assert.equal(
+    (await api.createPage('123456781234123412341234567890ab', 'CLI')).id,
+    'created-page'
+  );
+  assert.deepEqual(waits, [2000]);
+  assert.throws(() => createNotionApi({ token: 'unused' }), /fetcher and sleep/);
 });
