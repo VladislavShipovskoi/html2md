@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
   "default_locale": "en",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "permissions": ["activeTab", "scripting", "downloads", "clipboardWrite", "storage"],
   "host_permissions": ["https://api.notion.com/*"],
   "description": "__MSG_extensionDescription__",
