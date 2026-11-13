@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
-import { analyzePage } from '../extension/page-analysis.js';
-import { createMarkdown } from '../extension/markdown.js';
-import { normalizeCodeBlocks, extractCodeText, fencedCode } from '../extension/code-blocks.js';
+import { analyzePage } from '../core/index.js';
+import { createMarkdown } from '../core/index.js';
+import { normalizeCodeBlocks, extractCodeText, fencedCode } from '../core/index.js';
 
 function convert(html) {
   const { window } = new JSDOM('');

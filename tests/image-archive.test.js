@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { unzipSync, strFromU8 } from 'fflate';
 import { JSDOM } from 'jsdom';
-import { imageUrls, fetchImages, createArchive } from '../extension/image-archive.js';
+import { imageUrls, fetchImages as fetchNetworkImages, createArchive } from '../core/index.js';
+const fetchImages = (urls, maxTotalBytes) =>
+  fetchNetworkImages(urls, { fetcher: globalThis.fetch, credentials: 'include', maxTotalBytes });
 
 const article = {
   title: 'Example',
@@ -43,7 +45,9 @@ test('ZIP contains image bytes, local references and a missing image report', ()
 });
 
 test('handles successful images, HTTP errors, HTML responses and network failures', async (t) => {
-  t.mock.method(globalThis, 'fetch', async (url) => {
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    assert.equal(options.credentials, 'include');
+
     if (url.endsWith('/ok')) {
       return new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/png' } });
     }
@@ -66,6 +70,10 @@ test('handles successful images, HTTP errors, HTML responses and network failure
   ]);
   assert.deepEqual(results[0].bytes, [1, 2, 3]);
   assert.ok(results.slice(1).every((result) => result.failed));
+  assert.equal(results[1].reason, 'http');
+  assert.equal(results[1].status, 404);
+  assert.equal(results[2].reason, 'format');
+  assert.equal(results[3].reason, 'network');
 });
 
 test('creates Markdown-only ZIP when there are no images', () => {
@@ -239,7 +247,8 @@ test('enforces image and total size boundaries and cancels oversized streams', a
   const total = await fetchImages([...Array(5).fill(imageUrl(10 * mib)), imageUrl(1)]);
   assert.ok(total.slice(0, 5).every((image) => !image.failed));
   assert.equal(total[5].failed, true);
-  assert.equal(cancellations, 2);
+  assert.equal(total[5].reason, 'totalSize');
+  assert.equal(cancellations, 1);
 });
 
 test('archives unknown image MIME and reports missing bytes', () => {

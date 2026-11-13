@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { JSDOM } from 'jsdom';
-import { createMarkdown, markdownFilename } from '../extension/markdown.js';
+import { createMarkdown, markdownFilename } from '../core/index.js';
 
 test('converts structured content with metadata and absolute URLs', () => {
   const { window } = new JSDOM('');

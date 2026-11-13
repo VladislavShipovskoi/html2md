@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { JSDOM } from 'jsdom';
-import { analyzePage } from '../extension/page-analysis.js';
-import { createMarkdown } from '../extension/markdown.js';
+import { analyzePage } from '../core/index.js';
+import { createMarkdown } from '../core/index.js';
 
 const cases = {
   'inline-code.html': {

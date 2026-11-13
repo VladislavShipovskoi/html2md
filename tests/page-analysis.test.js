@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { JSDOM } from 'jsdom';
-import { analyzePage } from '../extension/page-analysis.js';
+import { analyzePage } from '../core/index.js';
 
 function articlePage() {
   const paragraph =

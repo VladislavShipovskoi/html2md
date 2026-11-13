@@ -23,6 +23,23 @@ export default [
     },
   },
   {
+    files: ['core/**/*.js'],
+    languageOptions: {
+      globals: { URL: 'readonly', AbortSignal: 'readonly', FormData: 'readonly', Blob: 'readonly' },
+    },
+    rules: {
+      'no-restricted-globals': [
+        'error',
+        'document',
+        'window',
+        'chrome',
+        'navigator',
+        'fetch',
+        'setTimeout',
+      ],
+    },
+  },
+  {
     files: ['scripts/**/*.js', 'tests/**/*.js', 'eslint.config.js'],
     languageOptions: { globals: globals.node },
   },
