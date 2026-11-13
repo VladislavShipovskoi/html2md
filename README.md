@@ -62,13 +62,15 @@ npm run build
 
 ## Install in Chrome
 
-1. Open `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select the `dist` folder.
-4. Open the extensions menu and pin HTML to Markdown to the toolbar.
+1. Download the extension ZIP archive attached to the latest [release](https://github.com/VladislavShipovskoi/html2md/releases/latest).
+2. Extract the archive to a folder you will keep on your computer.
+3. Open `chrome://extensions`.
+4. Enable **Developer mode**.
+5. Click **Load unpacked** and select the extracted folder containing `manifest.json`.
+6. Open the extensions menu and pin HTML to Markdown to the toolbar.
 
-After changing the source files, rebuild and click the extension's reload button
-on `chrome://extensions`.
+If building from source, select the generated `dist` folder instead. After changing
+the source files, rebuild and click the extension's reload button on `chrome://extensions`.
 
 ## Feedback
 
