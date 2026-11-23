@@ -1,5 +1,5 @@
 import type { ThemeStorage, Translate } from '../shared/types.ts';
-import type { createIntegrationRepository } from '../integrations/integrations.ts';
+import type { IntegrationService } from '../integrations/commands.ts';
 import { failure } from '../../core/index.ts';
 import { initializeLocalization } from '../shared/localization.ts';
 import { createMessageFormatter } from '../shared/messages.ts';
@@ -14,7 +14,7 @@ export async function initializeOptions({
 }: {
   document: Document;
   i18n: { getMessage: Translate };
-  repository: ReturnType<typeof createIntegrationRepository>;
+  repository: IntegrationService;
   themeStorage?: ThemeStorage;
 }) {
   const { t } = initializeLocalization(document, i18n);

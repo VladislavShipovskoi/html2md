@@ -15,6 +15,7 @@ export async function initializePopup({
   i18n,
   browser,
   repository,
+  notionConnection,
   notionApi,
   createId,
   themeStorage,
@@ -110,7 +111,7 @@ export async function initializePopup({
         return;
       }
 
-      const { token, parentId } = await repository.connection(id);
+      const { token, parentId } = await notionConnection(id);
 
       if (!token || !parentId) {
         notionMessage.textContent = t('notionNeedsSettings');

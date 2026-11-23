@@ -1,3 +1,14 @@
+import { createIntegrationRepository } from '../integrations/integrations.ts';
+import { createIntegrationHandler } from './integration-handler.ts';
+
+const repository = createIntegrationRepository({
+  storage: chrome.storage,
+  locks: navigator.locks,
+  createId: () => crypto.randomUUID(),
+});
+
+chrome.runtime.onMessage.addListener(createIntegrationHandler(repository, chrome.runtime));
+
 function restrictStorageAccess() {
   void Promise.all([
     chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' }),
