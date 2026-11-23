@@ -24,6 +24,7 @@ test('build contains a valid manifest, locale keys, popup and icon resources', a
 
   for (const path of [
     manifest.action.default_popup,
+    manifest.background.service_worker,
     manifest.options_ui.page,
     ...Object.values(manifest.icons),
     ...Object.values(manifest.action.default_icon),

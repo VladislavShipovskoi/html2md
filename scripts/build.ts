@@ -46,17 +46,18 @@ await build({
 for (const [name, globalName, start] of [
   ['popup', 'html2md', 'startPopup'],
   ['options', 'html2mdOptions', 'startOptions'],
+  ['background', 'html2mdWorker', ''],
 ]) {
   await build({
     absWorkingDir: projectRoot,
     tsconfigRaw: {},
     entryPoints: [resolve(sourceDirectory, name, 'main.ts')],
     plugins: [imagesPlugin],
-    outfile: resolve(outputDirectory, name + '.js'),
+    outfile: resolve(outputDirectory, (name === 'background' ? 'worker' : name) + '.js'),
     bundle: true,
     format: 'iife',
     globalName,
-    footer: { js: globalName + '.' + start + '();' },
+    footer: { js: start ? globalName + '.' + start + '();' : '' },
   });
 }
 
