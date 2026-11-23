@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml/badge.svg)](https://github.com/VladislavShipovskoi/html2md/actions/workflows/ci.yml)
 
-Simple chrome extension that extracts the main content of a web page and converts it to Markdown. Preview and copy the result, download a ZIP with images, or save an articleto Notion.
+Simple chrome extension that extracts the main content of a web page and converts it to Markdown. Preview and copy the result, download a ZIP with images, or save an article to Notion.
 
 ## Features
 
