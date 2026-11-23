@@ -197,21 +197,21 @@ export async function exportNotionArticle({
   for (const asset of state.assets.values()) {
     progress({ stage: 'upload', completed: count, total: state.assets.size });
 
+    if (!asset.uploadId && !asset.error && asset.image.failed) {
+      asset.error = { reason: asset.image.reason ?? 'network', status: asset.image.status };
+    }
+
     if (!asset.uploadId && !asset.error) {
-      if (asset.image.failed) {
-        asset.error = { reason: asset.image.reason ?? 'network', status: asset.image.status };
-      } else {
-        try {
-          asset.uploadId = await api.uploadImage(asset.image);
-        } catch (caught) {
-          const error = errorDetails(caught);
+      try {
+        asset.uploadId = await api.uploadImage(asset.image);
+      } catch (caught) {
+        const error = errorDetails(caught);
 
-          if (fatal(error)) {
-            throw error;
-          }
-
-          asset.error = { reason: error.imageReason ?? 'upload' };
+        if (fatal(error)) {
+          throw error;
         }
+
+        asset.error = { reason: error.imageReason ?? 'upload' };
       }
     }
 

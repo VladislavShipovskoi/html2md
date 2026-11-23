@@ -3,7 +3,7 @@ import type { createIntegrationRepository } from '../integrations/integrations.t
 import { failure } from '../../core/index.ts';
 import { initializeLocalization } from '../shared/localization.ts';
 import { createMessageFormatter } from '../shared/messages.ts';
-import { renderIntegrationForm, renderIntegrationTable } from './views.ts';
+import { renderConnectionStatus, renderIntegrationForm, renderIntegrationTable } from './views.ts';
 import { initializeTheme } from '../shared/theme.ts';
 
 export async function initializeOptions({
@@ -112,12 +112,26 @@ export async function initializeOptions({
       name: get('integration-name').value,
       parentId: get('notion-parent').value,
       token: get('notion-token').value,
+      rememberToken: get('remember-token').checked,
     };
     void perform(async () => {
       const id = await repository.save(input);
       navigate(`integration/${id}`);
       await render();
       get('settings-message').textContent = t('notionSettingsSaved');
+    });
+  });
+  get('forget-token').addEventListener('click', () => {
+    const id = editing;
+
+    if (!id) {
+      return;
+    }
+
+    void perform(async () => {
+      await repository.forgetToken(id);
+      renderConnectionStatus(document, false, t);
+      get('settings-message').textContent = t('tokenForgotten');
     });
   });
   get('detail-delete').addEventListener('click', () => {

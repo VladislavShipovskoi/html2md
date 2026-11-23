@@ -8,15 +8,19 @@ export function renderIntegrationForm(
   get('detail-title').textContent = adding ? t('integrationAdd') : record!.name;
   get('integration-name').value = record?.name ?? '';
   get('notion-parent').value = record?.parentId ?? '';
-  get('notion-token').value = '';
-  get('notion-token').placeholder = t(
-    record?.connected ? 'tokenReplacePlaceholder' : 'tokenPlaceholder'
-  );
-  get('connection-status').dataset.connected = String(Boolean(record?.connected));
+  get('remember-token').checked = record?.rememberToken ?? false;
   get('detail-delete').hidden = !record;
-  get('connection-status').textContent = t(
-    record?.connected ? 'notionConnected' : 'notionDisconnected'
-  );
+  renderConnectionStatus(document, Boolean(record?.connected), t);
+}
+
+export function renderConnectionStatus(document: Document, connected: boolean, t: Translate) {
+  const token = document.getElementById('notion-token') as HTMLInputElement;
+  const status = document.getElementById('connection-status')!;
+  token.value = '';
+  token.placeholder = t(connected ? 'tokenReplacePlaceholder' : 'tokenPlaceholder');
+  document.getElementById('forget-token')!.hidden = !connected;
+  status.dataset.connected = String(connected);
+  status.textContent = t(connected ? 'notionConnected' : 'notionDisconnected');
 }
 export function renderIntegrationTable(
   document: Document,

@@ -7,22 +7,24 @@ export const IMAGE_LIMITS = Object.freeze({
   timeoutMs: 10000,
 });
 
-/** Resolve supported image URLs from an explicitly supplied DOM. */
 export function imageUrls(article: Article, document: Document): string[] {
   const template = document.createElement('template');
   template.innerHTML = article.content;
-  return [
-    ...new Set(
-      [...template.content.querySelectorAll('img[src]')].flatMap((image) => {
-        try {
-          const url = new URL(image.getAttribute('src')!, article.baseUrl);
-          return ['http:', 'https:'].includes(url.protocol) ? [url.href] : [];
-        } catch {
-          return [];
-        }
-      })
-    ),
-  ];
+  const urls = new Set<string>();
+
+  for (const image of template.content.querySelectorAll('img[src]')) {
+    try {
+      const url = new URL(image.getAttribute('src')!, article.baseUrl);
+
+      if (['http:', 'https:'].includes(url.protocol)) {
+        urls.add(url.href);
+      }
+    } catch {
+      // Ignore malformed image URLs.
+    }
+  }
+
+  return [...urls];
 }
 
 export async function fetchImages(

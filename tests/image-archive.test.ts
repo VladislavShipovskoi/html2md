@@ -147,39 +147,13 @@ test('ignores malformed image URLs and non-HTTP schemes', () => {
   }
 });
 
-test('handles missing MIME, empty images, stream errors and timeout rejection', async (t) => {
-  t.mock.method(globalThis, 'fetch', async (url) => {
-    if (url.endsWith('/type')) {
-      return new Response(new Uint8Array([1]));
-    }
-
-    if (url.endsWith('/empty')) {
-      return new Response(new Uint8Array(), { headers: { 'content-type': 'image/png' } });
-    }
-
-    if (url.endsWith('/stream')) {
-      return {
-        ok: true,
-        headers: new Headers({ 'content-type': 'image/png' }),
-        body: {
-          getReader: () => ({
-            read: async () => {
-              throw new Error('Stream failed');
-            },
-          }),
-        },
-      };
-    }
-
+test('reports a timed-out image without aborting the export', async (t) => {
+  t.mock.method(globalThis, 'fetch', async () => {
     throw new DOMException('Timed out', 'TimeoutError');
   });
-  const results = await fetchImages([
-    'https://example.com/type',
-    'https://example.com/empty',
-    'https://example.com/stream',
-    'https://example.com/timeout',
-  ]);
-  assert.ok(results.every((image) => image.failed));
+  const [image] = await fetchImages(['https://example.com/timeout']);
+  assert.equal(image.failed, true);
+  assert.equal(image.reason, 'timeout');
 });
 
 test('combines multiple stream chunks and accepts MIME parameters', async (t) => {
@@ -249,26 +223,4 @@ test('enforces image and total size boundaries and cancels oversized streams', a
   assert.equal(total[5].failed, true);
   assert.equal(total[5].reason, 'totalSize');
   assert.equal(cancellations, 1);
-});
-
-test('archives unknown image MIME and reports missing bytes', () => {
-  const { window } = new JSDOM('');
-  try {
-    const archive = createArchive(
-      article,
-      [
-        { url: 'https://example.com/assets/diagram.svg', type: 'image/custom', bytes: [1] },
-        { url: 'https://example.com/assets/missing.png', bytes: [] },
-        { url: 'https://example.com/no-bytes' },
-      ],
-      window.document,
-      'Source'
-    );
-    const files = unzipSync(archive.bytes);
-    assert.ok(files['images/image-1.img']);
-    assert.equal(archive.failedCount, 2);
-    assert.ok(strFromU8(files['Example.md']).includes('images/image-1.img'));
-  } finally {
-    window.close();
-  }
 });

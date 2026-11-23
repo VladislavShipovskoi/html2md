@@ -42,27 +42,22 @@ await build({
   globalName: 'html2mdAnalysis',
   footer: { js: 'html2mdAnalysis.analyzePage(document);' },
 });
-await build({
-  absWorkingDir: projectRoot,
-  tsconfigRaw: {},
-  entryPoints: [resolve(sourceDirectory, 'popup/main.ts')],
-  plugins: [imagesPlugin],
-  outfile: resolve(outputDirectory, 'popup.js'),
-  bundle: true,
-  format: 'iife',
-  globalName: 'html2md',
-  footer: { js: 'html2md.startPopup();' },
-});
 
-await build({
-  absWorkingDir: projectRoot,
-  tsconfigRaw: {},
-  entryPoints: [resolve(sourceDirectory, 'options/main.ts')],
-  plugins: [imagesPlugin],
-  outfile: resolve(outputDirectory, 'options.js'),
-  bundle: true,
-  format: 'iife',
-  globalName: 'html2mdOptions',
-  footer: { js: 'html2mdOptions.startOptions();' },
-});
+for (const [name, globalName, start] of [
+  ['popup', 'html2md', 'startPopup'],
+  ['options', 'html2mdOptions', 'startOptions'],
+]) {
+  await build({
+    absWorkingDir: projectRoot,
+    tsconfigRaw: {},
+    entryPoints: [resolve(sourceDirectory, name, 'main.ts')],
+    plugins: [imagesPlugin],
+    outfile: resolve(outputDirectory, name + '.js'),
+    bundle: true,
+    format: 'iife',
+    globalName,
+    footer: { js: globalName + '.' + start + '();' },
+  });
+}
+
 console.log('Extension built in dist/');

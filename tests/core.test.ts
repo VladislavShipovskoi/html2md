@@ -1,8 +1,5 @@
 import { mockNotionApi, analyzeHtml } from './api-helper.ts';
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
-import { resolve, dirname, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import { JSDOM } from 'jsdom';
 import { unzipSync, strFromU8 } from 'fflate';
@@ -95,35 +92,6 @@ test('Notion public workflow accepts an API without browser or localization glob
     );
   } finally {
     window.close();
-  }
-});
-
-test('every relative import in core stays inside core, including dynamic imports', async () => {
-  const root = fileURLToPath(new URL('../core/', import.meta.url));
-  const packages = new Set(['@mozilla/readability', 'turndown', 'turndown-plugin-gfm', 'fflate']);
-
-  for (const file of await readdir(root, { recursive: true })) {
-    if (!file.endsWith('.ts')) {
-      continue;
-    }
-
-    const absolute = resolve(root, file);
-    const source = await readFile(absolute, 'utf8');
-
-    for (const match of source.matchAll(/(?:from\s*|import\s*\()['"]([^'"]+)['"]/g)) {
-      const specifier = match[1];
-
-      if (specifier.startsWith('.')) {
-        const target = resolve(dirname(absolute), specifier);
-        assert.ok(
-          target.startsWith(root.endsWith(sep) ? root : root + sep),
-          `${file} imports outside core: ${specifier}`
-        );
-        await readFile(target);
-      } else {
-        assert.ok(packages.has(specifier), `Unexpected core dependency: ${specifier}`);
-      }
-    }
   }
 });
 

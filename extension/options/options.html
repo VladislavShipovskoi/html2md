@@ -83,6 +83,11 @@
           <label for="notion-token" data-i18n="notionToken"></label>
           <input id="notion-token" type="password" autocomplete="off" spellcheck="false" />
           <p class="help" data-i18n="notionTokenHelp"></p>
+          <label class="remember-token">
+            <input id="remember-token" type="checkbox" aria-describedby="token-storage-help" />
+            <span data-i18n="rememberToken"></span>
+          </label>
+          <p id="token-storage-help" class="help" data-i18n="tokenStorageHelp"></p>
           <label for="notion-parent" data-i18n="notionParent"></label>
           <input id="notion-parent" type="text" autocomplete="off" spellcheck="false" required />
           <details>
@@ -97,6 +102,7 @@
           <p class="privacy-note" data-i18n="notionPrivacy"></p>
           <div class="actions">
             <button id="settings-save" type="submit" data-i18n="settingsSave"></button>
+            <button id="forget-token" type="button" data-i18n="forgetToken" hidden></button>
             <button
               id="detail-delete"
               class="danger"

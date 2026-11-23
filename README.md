@@ -39,9 +39,9 @@ The extension creates a child page under the configured parent and uploads avail
 
 If a save partially succeeds, retry within the same popup so it can reuse the page and its progress. Export recovery state is not retained after closing the popup. When an operation cannot be confirmed, check the Notion page before starting a new export to avoid duplicates.
 
-## Privacy and limitations
+## Privacy
 
-Connection names and parent page IDs persist locally. Tokens are held in `chrome.storage.session`, without disk persistence or sync. Enter them again after restarting Chrome or reloading the extension. When editing a connection, leave the token field blank to keep its current session token. Deleting a connection removes its settings and session token.
+Connection names and parent page IDs persist locally. Tokens use `chrome.storage.session` by default: enter them again after restarting Chrome or reloading the extension. Enable **Remember token on this device** for an integration to store its token in `chrome.storage.local` across restarts. This is opt-in, does not use sync, and stores the token without additional encryption; someone with access to Chrome profile files may extract it. Both storage areas are restricted to trusted extension contexts. **Forget token** removes the token from both areas while retaining integration settings. Deleting an integration removes its settings and token.
 
 Page extraction and Markdown conversion run locally. ZIP export downloads images from their source URLs in the source tab, using its browser session. Saving to Notion sends the article and downloaded images directly to the Notion API.
 

@@ -1,5 +1,5 @@
 import { errorDetails } from '../../core/errors.ts';
-import type { Article } from '../../core/types.ts';
+import type { Article, Progress } from '../../core/types.ts';
 import type { ExportState } from '../../core/notion/export-state.ts';
 import type { createRuntimeServices } from '../shared/runtime.ts';
 import { createMarkdown } from '../../core/index.ts';
@@ -25,6 +25,12 @@ export async function initializePopup({
   const { t, locale } = initializeLocalization(document, i18n);
   await initializeTheme({ document, storage: themeStorage, t });
   const messages = createMessageFormatter(t);
+  const titleEl = document.querySelector<HTMLElement>('#page-title')!;
+  const sourceEl = document.querySelector<HTMLElement>('#page-source')!;
+  const countEl = document.querySelector<HTMLElement>('#text-count')!;
+  const detailsEl = document.querySelector<HTMLElement>('#details')!;
+  const previewEl = document.querySelector<HTMLTextAreaElement>('#preview')!;
+  const outputEl = document.querySelector<HTMLElement>('#output')!;
   let currentArticle: Article;
   let pageTitle: string;
   let markdown = '';
@@ -37,6 +43,21 @@ export async function initializePopup({
   const notionProgress = document.querySelector<HTMLProgressElement>('#notion-progress')!;
   const notionSettings = document.querySelector<HTMLElement>('#notion-settings')!;
   notionProgress.setAttribute('aria-label', t('notionSave'));
+  function showNotionProgress(event: Progress) {
+    notionMessage.textContent = messages.progress(event);
+    notionProgress.hidden = false;
+
+    if (event.total > 0 && event.stage !== 'finish') {
+      notionProgress.max = event.total;
+      notionProgress.value = event.completed;
+    } else {
+      notionProgress.removeAttribute('value');
+    }
+  }
+  function showNotionPage(page: { id: string }) {
+    notionLink.href = 'https://app.notion.com/p/' + page.id.replaceAll('-', '');
+    notionLink.hidden = false;
+  }
   let exportState: ExportState | undefined;
   let saved = false;
   const integrationSelect = document.querySelector<HTMLSelectElement>('#integration-select')!;
@@ -111,21 +132,8 @@ export async function initializePopup({
         parentId,
         title: pageTitle,
         formatImageError: messages.imageError,
-        progress: (event) => {
-          notionMessage.textContent = messages.progress(event);
-          notionProgress.hidden = false;
-
-          if (event.total > 0 && event.stage !== 'finish') {
-            notionProgress.max = event.total;
-            notionProgress.value = event.completed;
-          } else {
-            notionProgress.removeAttribute('value');
-          }
-        },
-        onPage: (page) => {
-          notionLink.href = 'https://app.notion.com/' + page.id.replaceAll('-', '');
-          notionLink.hidden = false;
-        },
+        progress: showNotionProgress,
+        onPage: showNotionPage,
         downloadImages: (urls, progress) => browser.downloadImages(sourceTabId, urls, progress),
       });
 
@@ -149,8 +157,8 @@ export async function initializePopup({
   convertButton.addEventListener('click', () => {
     try {
       markdown = createMarkdown(currentArticle, document, t('sourceLabel'));
-      document.querySelector<HTMLTextAreaElement>('#preview')!.value = markdown;
-      document.querySelector<HTMLElement>('#output')!.hidden = false;
+      previewEl.value = markdown;
+      outputEl.hidden = false;
       convertButton.hidden = true;
       actionMessage.textContent = '';
     } catch {
@@ -204,20 +212,14 @@ export async function initializePopup({
         result.articleFound ? t('textAvailable') : t('articleNotFound')
       );
 
-      document.querySelector<HTMLElement>('#page-title')!.textContent =
-        result.title || tab.title || t('untitled');
+      titleEl.textContent = result.title || tab.title || t('untitled');
       try {
-        document.querySelector<HTMLElement>('#page-source')!.textContent = new URL(
-          result.url || tab.url!
-        ).hostname;
+        sourceEl.textContent = new URL(result.url || tab.url!).hostname;
       } catch {
-        document.querySelector<HTMLElement>('#page-source')!.textContent = '';
+        sourceEl.textContent = '';
       }
-      document.querySelector<HTMLElement>('#text-count')!.textContent = t(
-        'characterCount',
-        result.characters.toLocaleString(locale)
-      );
-      document.querySelector<HTMLElement>('#details')!.hidden = false;
+      countEl.textContent = t('characterCount', result.characters.toLocaleString(locale));
+      detailsEl.hidden = false;
 
       if (result.articleFound) {
         pageTitle = tab.title || result.title || t('untitled');

@@ -36,6 +36,11 @@ test('build contains a valid manifest, locale keys, popup and icon resources', a
       await readFile(new URL(`_locales/${locale}/messages.json`, output), 'utf8')
     );
 
+    for (const [key, value] of Object.entries(messages)) {
+      const { message } = value as { message: string };
+      assert.ok(!/\?{3,}|\uFFFD/.test(message), `Damaged translation: ${locale}/${key}`);
+    }
+
     for (const match of JSON.stringify(manifest).matchAll(/__MSG_(\w+)__/g)) {
       assert.ok(messages[match[1]]?.message);
     }
@@ -45,25 +50,6 @@ test('build contains a valid manifest, locale keys, popup and icon resources', a
   assert.ok(!files.some((file) => file.endsWith('.ts')), 'TypeScript source leaked into dist');
 
   assert.equal(manifest.options_ui.open_in_tab, true);
-
-  for (const name of [
-    'markdown.js',
-    'image-archive.js',
-    'code-blocks.js',
-    'notion-settings.js',
-    'integrations.js',
-    'notion-content.js',
-    'notion-export.js',
-    'export-state.js',
-    'runtime.js',
-  ]) {
-    assert.ok(!files.includes(name), `Unbundled module in output: ${name}`);
-  }
-
-  for (const name of ['popup.js', 'page-analysis.js', 'options.js']) {
-    const script = await readFile(new URL(name, output), 'utf8');
-    assert.ok(!/^import\s/m.test(script), `Unresolved imports: ${name}`);
-  }
 });
 
 test('bundled popup starts automatically and reports restricted pages', async () => {

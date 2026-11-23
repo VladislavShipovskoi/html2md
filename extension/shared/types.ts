@@ -6,12 +6,14 @@ export interface Integration {
   name: string;
   parentId: string;
   connected?: boolean;
+  rememberToken?: boolean;
 }
 export interface IntegrationInput {
   id?: string;
   name: string;
   parentId: string;
   token: string;
+  rememberToken?: boolean;
 }
 export type StorageData = Record<string, any>;
 export interface StorageArea {

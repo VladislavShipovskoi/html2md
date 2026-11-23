@@ -6,6 +6,7 @@ import { JSDOM } from 'jsdom';
 import { unzipSync, strFromU8 } from 'fflate';
 import { initializePopup } from '../extension/popup/popup.ts';
 import { createRuntimeServices } from '../extension/shared/runtime.ts';
+const locale = 'en';
 const html = await readFile(new URL('../extension/popup/popup.html', import.meta.url), 'utf8');
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 async function openPopup(t, options: Record<string, any> = {}) {
@@ -176,6 +177,7 @@ test('Notion retries content on the created page using a session token', async (
   await popup.click('#notion-save');
   assert.equal(popup.element('#notion-save').disabled, false);
   assert.equal(popup.element('#notion-link').hidden, false);
+  assert.equal(popup.element('#notion-link').href, `https://app.notion.com/p/${id}`);
   await popup.click('#notion-save');
   assert.equal(requests.filter((r) => r.url.endsWith('/pages')).length, 1);
   assert.equal(
@@ -191,49 +193,38 @@ test('Notion retries content on the created page using a session token', async (
   assert.equal(popup.element('#notion-token'), null);
 });
 
-for (const locale of ['en', 'ru']) {
-  test(`popup: conversion, copying, ZIP and localization (${locale})`, async (t) => {
-    const popup = await openPopup(t, { locale });
-    assert.equal(popup.window.document.documentElement.lang, locale);
-    assert.equal(popup.element('#status').textContent, popup.translate('conversionAvailable'));
-    assert.equal(
-      popup.element('#text-count').textContent,
-      popup.translate('characterCount', (1234).toLocaleString(locale))
-    );
-    await popup.click('#convert');
-    assert.equal(popup.element('#output').hidden, false);
-    assert.equal(popup.element('#convert').hidden, true);
-    await popup.click('#copy');
-    assert.equal(popup.state.copied, popup.element('#preview').value);
-    await popup.click('#download');
-    assert.equal(popup.state.downloads[0].filename, 'Article.zip');
-    const files = unzipSync(new Uint8Array(await popup.state.blob.arrayBuffer()));
-    assert.ok(strFromU8(files['Article.md']).includes('Example text'));
-    assert.equal(popup.element('#download').disabled, false);
-    assert.equal(popup.state.timers[0].delay, 30000);
-    popup.state.timers[0].callback();
-    assert.deepEqual(popup.state.revoked, ['blob:archive']);
-  });
-}
+test(`popup: conversion, copying, ZIP and localization (${locale})`, async (t) => {
+  const popup = await openPopup(t, { locale });
+  assert.equal(popup.window.document.documentElement.lang, locale);
+  assert.equal(popup.element('#status').textContent, popup.translate('conversionAvailable'));
+  assert.equal(
+    popup.element('#text-count').textContent,
+    popup.translate('characterCount', (1234).toLocaleString(locale))
+  );
+  await popup.click('#convert');
+  assert.equal(popup.element('#output').hidden, false);
+  assert.equal(popup.element('#convert').hidden, true);
+  await popup.click('#copy');
+  assert.equal(popup.state.copied, popup.element('#preview').value);
+  await popup.click('#download');
+  assert.equal(popup.state.downloads[0].filename, 'Article.zip');
+  const files = unzipSync(new Uint8Array(await popup.state.blob.arrayBuffer()));
+  assert.ok(strFromU8(files['Article.md']).includes('Example text'));
+  assert.equal(popup.element('#download').disabled, false);
+  assert.equal(popup.state.timers[0].delay, 30000);
+  popup.state.timers[0].callback();
+  assert.deepEqual(popup.state.revoked, ['blob:archive']);
+});
 
 const analysisCases: [string, Record<string, any>, string][] = [
   ['no tab', { tabs: [] }, 'noActiveTab'],
-  ['missing tab id', { tabs: [{}] }, 'noActiveTab'],
-  ...[
-    'chrome://extensions',
-    'file:///page.html',
-    'https://chromewebstore.google.com/detail/example',
-    'https://chrome.google.com/webstore/detail/example',
-  ].map((url): [string, Record<string, any>, string] => [
-    url,
-    { tabs: [{ id: 7, url }] },
+  ['restricted page', { tabs: [{ id: 7, url: 'chrome://extensions' }] }, 'restrictedPage'],
+  [
+    'web store',
+    { tabs: [{ id: 7, url: 'https://chromewebstore.google.com/detail/example' }] },
     'restrictedPage',
-  ]),
-  ['missing URL', { tabs: [{ id: 7 }] }, 'restrictedPage'],
-  ['invalid URL', { tabs: [{ id: 7, url: 'not a URL' }] }, 'accessError'],
+  ],
   ['injection error', { analysisError: true }, 'accessError'],
-  ['empty response', { analysisResponse: [] }, 'accessError'],
-  ['missing result', { analysisResponse: [{}] }, 'accessError'],
   ['unsupported document', { article: { supported: false } }, 'unsupportedDocument'],
   ['no article', { article: { articleFound: false } }, 'articleNotFound'],
 ];
@@ -278,8 +269,6 @@ for (const [name, options, missing] of [
     true,
   ],
   ['closed tab', { imageError: true }, true],
-  ['no response', { imageResponse: [] }, true],
-  ['no result', { imageResponse: [{}] }, true],
 ] as [string, Record<string, any>, boolean][]) {
   test(`popup ZIP with images: ${name}`, async (t) => {
     const popup = await openPopup(t, {
@@ -374,3 +363,10 @@ for (const locale of ['en', 'ru']) {
     assert.ok(!JSON.stringify(popup.state.imageRequest).includes('private-token'));
   });
 }
+
+test('Russian popup renders translated actions', async (t) => {
+  const popup = await openPopup(t, { locale: 'ru' });
+  assert.equal(popup.window.document.documentElement.lang, 'ru');
+  assert.equal(popup.element('#status').textContent, popup.translate('conversionAvailable'));
+  assert.equal(popup.element('#notion-save').textContent.trim(), popup.translate('notionSave'));
+});

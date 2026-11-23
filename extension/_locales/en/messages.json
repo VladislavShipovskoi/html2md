@@ -1,8 +1,16 @@
 {
-  "darkTheme": { "message": "Dark theme" },
-  "switchToLightTheme": { "message": "Switch to light theme" },
-  "switchToDarkTheme": { "message": "Switch to dark theme" },
-  "themeSaveError": { "message": "Could not save the theme. Try again." },
+  "darkTheme": {
+    "message": "Dark theme"
+  },
+  "switchToLightTheme": {
+    "message": "Switch to light theme"
+  },
+  "switchToDarkTheme": {
+    "message": "Switch to dark theme"
+  },
+  "themeSaveError": {
+    "message": "Could not save the theme. Try again."
+  },
   "convert": {
     "message": "Convert"
   },
@@ -114,7 +122,7 @@
     "message": "Parent page URL or ID"
   },
   "notionPrivacy": {
-    "message": "The token is kept only in browser session memory, without disk storage or sync. Enter it again after restarting Chrome or reloading the extension. This reduces disk exposure but does not protect a compromised running browser. Article content is sent directly to Notion when you save."
+    "message": "By default, tokens are held only in session memory. Persistent storage is enabled separately for each integration. Article content is sent directly to Notion when you save."
   },
   "notionForget": {
     "message": "Forget connection"
@@ -177,13 +185,13 @@
     "message": "Token needed"
   },
   "notionSettingsSaved": {
-    "message": "Settings saved for this session."
+    "message": "Settings saved."
   },
   "notionNeedsSettings": {
     "message": "Connect Notion in Settings before saving an article."
   },
   "notionTokenHelp": {
-    "message": "Enter a token after restarting Chrome. Leave blank to keep the current session token."
+    "message": "Leave blank to keep the current token."
   },
   "integrationsTitle": {
     "message": "Integrations"
@@ -310,7 +318,7 @@
     "message": "Choose where to save articles."
   },
   "sessionTokenNote": {
-    "message": "Tokens are kept until the browser restarts."
+    "message": "Unless you enable token storage, enter your token again after restarting Chrome or reloading the extension."
   },
   "notionSetupTitle": {
     "message": "How to connect Notion?"
@@ -320,5 +328,17 @@
   },
   "tokenReplacePlaceholder": {
     "message": "Enter a new token to replace the current one"
+  },
+  "rememberToken": {
+    "message": "Remember token on this device"
+  },
+  "tokenStorageHelp": {
+    "message": "When enabled, the token is stored locally without additional encryption. Anyone with access to Chrome profile files may extract it. Sync is not used."
+  },
+  "forgetToken": {
+    "message": "Forget token"
+  },
+  "tokenForgotten": {
+    "message": "Token removed. Integration settings retained."
   }
 }

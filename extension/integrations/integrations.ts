@@ -1,15 +1,22 @@
 import { errorDetails } from '../../core/errors.ts';
-import type { Integration, IntegrationInput, IntegrationStorage, Locks } from '../shared/types.ts';
+import type {
+  Integration,
+  IntegrationInput,
+  IntegrationStorage,
+  Locks,
+  StorageArea,
+} from '../shared/types.ts';
 import { failure } from '../../core/index.ts';
 import { notionPageId, normalizeToken } from '../../core/notion/index.ts';
 
 const LOCK_NAME = 'html2md-integrations';
 const tokenKey = (id: string) => `integrationToken:${id}`;
-const persisted = ({ id, type, name, parentId }: Integration): Integration => ({
+const persisted = ({ id, type, name, parentId, rememberToken }: Integration): Integration => ({
   id,
   type,
   name,
   parentId,
+  rememberToken: rememberToken ?? false,
 });
 
 export function createIntegrationRepository({
@@ -93,13 +100,24 @@ export function createIntegrationRepository({
     return (await storage.local.get('integrations')).integrations ?? [];
   }
 
+  const tokenStorage = (record?: Integration) =>
+    storage[record?.rememberToken ? 'local' : 'session'];
+  const readToken = async (record: Integration) =>
+    (await tokenStorage(record).get(tokenKey(record.id)))[tokenKey(record.id)];
+  const writeToken = (area: StorageArea, key: string, value: string | undefined) =>
+    value === undefined ? area.remove(key) : area.set({ [key]: value });
+  async function clearTokens(key: string) {
+    await storage.local.remove(key);
+    await storage.session.remove(key);
+  }
+
   async function list() {
     return locked(async () =>
       Promise.all(
-        (await records()).map(async (record) => {
-          const session = await storage.session.get(tokenKey(record.id));
-          return { ...persisted(record), connected: Boolean(session[tokenKey(record.id)]) };
-        })
+        (await records()).map(async (record) => ({
+          ...persisted(record),
+          connected: Boolean(await readToken(record)),
+        }))
       )
     );
   }
@@ -112,20 +130,31 @@ export function createIntegrationRepository({
         throw failure('integrationNotFound');
       }
 
-      const session = await storage.session.get(tokenKey(id));
-      return { ...persisted(record), token: session[tokenKey(id)] ?? '' };
+      return { ...persisted(record), token: (await readToken(record)) ?? '' };
     });
   }
 
-  async function restoreToken(key: string, token: string | undefined) {
-    if (token === undefined) {
-      await storage.session.remove(key);
-    } else {
-      await storage.session.set({ [key]: token });
+  async function changeTokens(id: string, action: (key: string) => Promise<void>) {
+    const key = tokenKey(id);
+    const local = (await storage.local.get(key))[key];
+    const session = (await storage.session.get(key))[key];
+    try {
+      await action(key);
+    } catch (error) {
+      const restored = await Promise.allSettled([
+        writeToken(storage.local, key, local),
+        writeToken(storage.session, key, session),
+      ]);
+
+      if (restored.some((result) => result.status === 'rejected')) {
+        throw failure('notionSettingsError');
+      }
+
+      throw error;
     }
   }
 
-  async function save({ id, name, parentId, token }: IntegrationInput) {
+  async function save({ id, name, parentId, token, rememberToken }: IntegrationInput) {
     return locked(async () => {
       const parent = notionPageId(parentId);
 
@@ -146,9 +175,14 @@ export function createIntegrationRepository({
         throw failure('notionMissingToken');
       }
 
-      const record = { id: id ?? createId(), type: 'notion', name: name.trim(), parentId: parent };
-      const key = tokenKey(record.id);
-      const previous = (await storage.session.get(key))[key];
+      const previous = current[index];
+      const record: Integration = {
+        id: id ?? createId(),
+        type: 'notion',
+        name: name.trim(),
+        parentId: parent,
+        rememberToken: rememberToken ?? previous?.rememberToken ?? false,
+      };
       const next = current.map(persisted);
 
       if (index < 0) {
@@ -157,42 +191,37 @@ export function createIntegrationRepository({
         next[index] = record;
       }
 
-      if (normalized) {
-        await storage.session.set({ [key]: normalized });
-      }
-
-      try {
+      await changeTokens(record.id, async (key) => {
+        const value = normalized || (previous ? await readToken(previous) : undefined);
+        await writeToken(tokenStorage(record), key, value);
+        await storage[record.rememberToken ? 'session' : 'local'].remove(key);
         await storage.local.set({ integrations: next });
-      } catch (caught) {
-        const error = errorDetails(caught);
-
-        if (normalized) {
-          await restoreToken(key, previous);
-        }
-
-        throw error;
-      }
+      });
       return record.id;
+    });
+  }
+
+  async function forgetToken(id: string) {
+    return locked(async () => {
+      if (!(await records()).some((record) => record.id === id)) {
+        throw failure('integrationNotFound');
+      }
+
+      await changeTokens(id, clearTokens);
     });
   }
 
   async function remove(id: string) {
     return locked(async () => {
       const current = await records();
-      const key = tokenKey(id);
-      const previous = (await storage.session.get(key))[key];
-      await storage.session.remove(key);
-      try {
+      await changeTokens(id, async (key) => {
+        await clearTokens(key);
         await storage.local.set({
           integrations: current.filter((item) => item.id !== id).map(persisted),
         });
-      } catch (caught) {
-        const error = errorDetails(caught);
-        await restoreToken(key, previous);
-        throw error;
-      }
+      });
     });
   }
 
-  return { initialize, list, connection, save, remove };
+  return { initialize, list, connection, save, remove, forgetToken };
 }
