@@ -43,6 +43,10 @@ export function createMessageFormatter(t: Translate) {
           'integrationNameRequired',
           'integrationNotFound',
           'notionImageUncertain',
+          'queueStorageError',
+          'queueInvalidTask',
+          'queueTaskRunning',
+          'queueTaskNotRetryable',
         ].includes(error.code ?? error.message ?? '')
           ? (error.code ?? error.message)!
           : fallback

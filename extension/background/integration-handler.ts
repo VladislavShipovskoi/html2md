@@ -23,9 +23,9 @@ export function createIntegrationHandler(
   async function execute(message: Record<string, unknown>, sender: chrome.runtime.MessageSender) {
     const url = sender.url?.split(/[?#]/)[0];
     const options = url === runtime.getURL('options.html');
-    const popup = url === runtime.getURL('popup.html');
+    const panel = url === runtime.getURL('side-panel.html');
 
-    if (sender.id !== runtime.id || (!options && !popup)) {
+    if (sender.id !== runtime.id || (!options && !panel)) {
       throw failure('notionSettingsError');
     }
 

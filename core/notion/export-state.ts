@@ -19,7 +19,10 @@ export interface ExportState {
   occurrences: ImageOccurrence[];
   initialFailures: number;
   failedCount: number;
-  assets: Map<string, { image: ImageResult; uploadId?: string; error?: ImageError }>;
+  assets: Map<
+    string,
+    { image: ImageResult; uploadId?: string; uploading?: StepStatus; error?: ImageError }
+  >;
   creation: StepStatus;
   writing: StepStatus;
   downloading: StepStatus;

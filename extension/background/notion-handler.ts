@@ -81,7 +81,7 @@ export function createNotionHandler({
 
     if (
       sender.id !== runtime.id ||
-      sender.url?.split(/[?#]/)[0] !== runtime.getURL('popup.html') ||
+      sender.url?.split(/[?#]/)[0] !== runtime.getURL('side-panel.html') ||
       typeof integrationId !== 'string' ||
       !integrationId ||
       !Array.isArray(args) ||

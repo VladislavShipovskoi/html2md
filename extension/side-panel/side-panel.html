@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-i18n="extensionName">HTML to Markdown</title>
     <link rel="stylesheet" href="../shared/styles.css" />
-    <link rel="stylesheet" href="popup.css" />
-    <script src="popup.js" defer></script>
+    <link rel="stylesheet" href="side-panel.css" />
+    <script src="side-panel.js" defer></script>
   </head>
   <body>
     <header>
@@ -74,17 +74,16 @@
           <select id="integration-select"></select>
           <button id="notion-save" class="secondary" type="button" data-i18n="notionSave"></button>
           <p id="notion-message" role="status"></p>
-          <progress id="notion-progress" aria-describedby="notion-message" hidden></progress>
           <button id="notion-settings" type="button" data-i18n="settingsTitle" hidden></button>
-          <a
-            id="notion-link"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-i18n="notionOpenPage"
-            hidden></a>
         </section>
       </section>
       <p id="action-message" role="status"></p>
+      <section class="queue-section" aria-labelledby="queue-title" hidden>
+        <h2 id="queue-title" data-i18n="queueTitle"></h2>
+        <button id="queue-clear" type="button" data-i18n="queueClear"></button>
+        <p id="queue-message" role="status"></p>
+        <ul id="queue-list"></ul>
+      </section>
     </main>
     <footer data-i18n="footer"></footer>
   </body>

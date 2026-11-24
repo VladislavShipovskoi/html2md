@@ -46,6 +46,7 @@ export interface NotionExportOptions {
   formatImageError: ImageErrorFormatter;
   progress?: ProgressCallback;
   onPage?: (page: { id: string }) => void;
+  checkpoint?: () => Promise<void>;
 }
 export interface RequestOptions {
   method?: string;

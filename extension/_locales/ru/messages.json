@@ -1,4 +1,51 @@
 {
+  "automaticAnalysisTitle": { "message": "Доступ к страницам" },
+  "automaticAnalysisLabel": { "message": "Автоматически анализировать вкладки" },
+  "automaticAnalysisHelp": {
+    "message": "Однократно разрешите доступ ко всем HTTP- и HTTPS-сайтам. Пока боковая панель открыта, статьи анализируются при переключении вкладок и переходах. Отключите настройку, чтобы отозвать этот доступ и снова разрешать его нажатием значка расширения."
+  },
+  "automaticAnalysisError": {
+    "message": "Не удалось изменить доступ к сайтам. Проверьте разрешения расширения в Chrome."
+  },
+  "stage_prepare": { "message": "Подготовка экспорта" },
+  "stage_download": { "message": "Загрузка изображений" },
+  "stage_upload": { "message": "Отправка изображений" },
+  "stage_finish": { "message": "Завершение экспорта" },
+  "stage_save": { "message": "Сохранение ZIP" },
+  "queueTitle": { "message": "Очередь экспорта" },
+  "queueEmpty": { "message": "Задач экспорта пока нет." },
+  "queueClear": { "message": "Очистить завершённые" },
+  "queueRetry": { "message": "Повторить" },
+  "queueRemove": { "message": "Удалить" },
+  "queueAdded": {
+    "message": "Добавлено в очередь. Можно закрыть панель: экспорт продолжится в фоне."
+  },
+  "queueStorageError": {
+    "message": "Не удалось получить доступ к очереди экспорта. Попробуйте ещё раз."
+  },
+  "queueInvalidTask": {
+    "message": "Не удалось создать задачу. Откройте расширение заново на странице статьи."
+  },
+  "queueTaskNotFound": { "message": "Эта задача уже удалена." },
+  "queueTaskRunning": { "message": "Выполняющуюся задачу нельзя удалить." },
+  "queueStaleAttempt": { "message": "Эта попытка больше не активна." },
+  "queueTaskNotRetryable": { "message": "Эту задачу нельзя безопасно повторить." },
+  "queueTaskNotWaiting": { "message": "Эта задача не ожидает токен." },
+  "queueNeedsReview": {
+    "message": "Операция могла завершиться. Проверьте результат перед новым экспортом; автоматический повтор отключён."
+  },
+  "queueImageWarning": {
+    "message": "Недоступных изображений: $COUNT$.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "task_queued": { "message": "В очереди" },
+  "task_running": { "message": "Выполняется" },
+  "task_waiting_credentials": {
+    "message": "Ожидает токен Notion. Восстановите исходную интеграцию в настройках."
+  },
+  "task_needs_review": { "message": "Нужна проверка" },
+  "task_completed": { "message": "Завершено" },
+  "task_failed": { "message": "Ошибка" },
   "darkTheme": {
     "message": "Тёмная тема"
   },
@@ -102,6 +149,9 @@
         "example": "1 234"
       }
     }
+  },
+  "panelGrantAccess": {
+    "message": "Нажмите значок расширения на этой вкладке, чтобы разрешить доступ и проанализировать страницу."
   },
   "accessError": {
     "message": "Не удалось получить доступ к содержимому. Возможно, Chrome ограничивает доступ или вкладка была закрыта. После загрузки страницы попробуйте снова."

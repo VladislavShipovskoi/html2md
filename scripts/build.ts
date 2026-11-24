@@ -20,11 +20,11 @@ for (const asset of ['manifest.json', '_locales', 'icons']) {
   await cp(resolve(sourceDirectory, asset), resolve(outputDirectory, asset), { recursive: true });
 }
 
-for (const asset of ['popup/popup.css', 'options/options.css', 'shared/styles.css']) {
+for (const asset of ['side-panel/side-panel.css', 'options/options.css', 'shared/styles.css']) {
   await cp(resolve(sourceDirectory, asset), resolve(outputDirectory, asset.split('/').at(-1)!));
 }
 
-for (const name of ['popup', 'options']) {
+for (const name of ['side-panel', 'options', 'offscreen']) {
   const html = await readFile(resolve(sourceDirectory, name, name + '.html'), 'utf8');
   await writeFile(
     resolve(outputDirectory, name + '.html'),
@@ -44,9 +44,10 @@ await build({
 });
 
 for (const [name, globalName, start] of [
-  ['popup', 'html2md', 'startPopup'],
+  ['side-panel', 'html2md', 'startSidePanel'],
   ['options', 'html2mdOptions', 'startOptions'],
   ['background', 'html2mdWorker', ''],
+  ['offscreen', 'html2mdOffscreen', ''],
 ]) {
   await build({
     absWorkingDir: projectRoot,

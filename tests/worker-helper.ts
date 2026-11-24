@@ -25,7 +25,7 @@ export function mockWorker({
   ];
   const requests: unknown[] = [];
   const responses: unknown[] = [];
-  const sender = (page = 'popup.html'): chrome.runtime.MessageSender => ({
+  const sender = (page = 'side-panel.html'): chrome.runtime.MessageSender => ({
     id: runtime.id,
     url: runtime.getURL(page),
   });

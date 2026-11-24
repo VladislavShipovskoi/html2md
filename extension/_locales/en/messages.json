@@ -1,4 +1,49 @@
 {
+  "automaticAnalysisTitle": { "message": "Page access" },
+  "automaticAnalysisLabel": { "message": "Automatically analyze tabs" },
+  "automaticAnalysisHelp": {
+    "message": "Allow access to all HTTP and HTTPS sites once. While the side panel is open, articles are analyzed when you switch tabs or navigate. Turn this off to revoke that access and return to granting access with the extension icon."
+  },
+  "automaticAnalysisError": {
+    "message": "Could not update site access. Check the extension permissions in Chrome."
+  },
+  "stage_prepare": { "message": "Preparing export" },
+  "stage_download": { "message": "Downloading images" },
+  "stage_upload": { "message": "Uploading images" },
+  "stage_finish": { "message": "Finishing export" },
+  "stage_save": { "message": "Saving ZIP" },
+  "queueTitle": { "message": "Export queue" },
+  "queueEmpty": { "message": "No export tasks yet." },
+  "queueClear": { "message": "Clear completed" },
+  "queueRetry": { "message": "Retry" },
+  "queueRemove": { "message": "Remove" },
+  "queueAdded": {
+    "message": "Added to the queue. You can close the panel; export continues in the background."
+  },
+  "queueStorageError": { "message": "Could not access the export queue. Please try again." },
+  "queueInvalidTask": {
+    "message": "Could not create the export task. Reopen the extension on the article."
+  },
+  "queueTaskNotFound": { "message": "This task has been removed." },
+  "queueTaskRunning": { "message": "An active task cannot be removed." },
+  "queueStaleAttempt": { "message": "This attempt is no longer active." },
+  "queueTaskNotRetryable": { "message": "This task cannot be safely retried." },
+  "queueTaskNotWaiting": { "message": "This task is not waiting for credentials." },
+  "queueNeedsReview": {
+    "message": "The operation may have completed. Check the result before starting another export; automatic retry is disabled."
+  },
+  "queueImageWarning": {
+    "message": "Images unavailable: $COUNT$.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "task_queued": { "message": "Queued" },
+  "task_running": { "message": "Running" },
+  "task_waiting_credentials": {
+    "message": "Waiting for a Notion token. Restore the original integration in settings."
+  },
+  "task_needs_review": { "message": "Needs review" },
+  "task_completed": { "message": "Completed" },
+  "task_failed": { "message": "Failed" },
   "darkTheme": {
     "message": "Dark theme"
   },
@@ -103,6 +148,9 @@
       }
     }
   },
+  "panelGrantAccess": {
+    "message": "Click the extension icon on this tab to grant access and analyze the page."
+  },
   "accessError": {
     "message": "Could not access the content. Chrome may restrict access, or the tab may have been closed. Try again after the page has loaded."
   },
@@ -161,7 +209,7 @@
     "message": "Could not confirm saving. Check Notion before trying again to avoid duplicates."
   },
   "notionPartialSave": {
-    "message": "The page was created. You can open it or retry saving its contents in this popup."
+    "message": "The page was created. You can open it or retry saving its contents in this panel."
   },
   "notionSettingsError": {
     "message": "Could not access the saved Notion settings."
@@ -276,7 +324,7 @@
     "message": "Notion could not accept the image"
   },
   "notionImageUncertain": {
-    "message": "Could not confirm the operation. Check the Notion page before saving again. This popup will not repeat an unconfirmed insertion."
+    "message": "Could not confirm the operation. Check the Notion page before saving again. This panel will not repeat an unconfirmed insertion."
   },
   "notionDownloadingImages": {
     "message": "Downloading images $COUNT$/$TOTAL$… Keep this window open.",

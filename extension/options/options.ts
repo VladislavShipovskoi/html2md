@@ -5,19 +5,24 @@ import { initializeLocalization } from '../shared/localization.ts';
 import { createMessageFormatter } from '../shared/messages.ts';
 import { renderConnectionStatus, renderIntegrationForm, renderIntegrationTable } from './views.ts';
 import { initializeTheme } from '../shared/theme.ts';
+import { initializeAutomaticAnalysis } from './automatic-analysis.ts';
+import type { SitePermissions } from './automatic-analysis.ts';
 
 export async function initializeOptions({
   document,
   i18n,
   repository,
   themeStorage,
+  sitePermissions,
 }: {
   document: Document;
   i18n: { getMessage: Translate };
   repository: IntegrationService;
   themeStorage?: ThemeStorage;
+  sitePermissions?: SitePermissions;
 }) {
   const { t } = initializeLocalization(document, i18n);
+  initializeAutomaticAnalysis(document, sitePermissions, t);
   await initializeTheme({ document, storage: themeStorage, t });
   const messages = createMessageFormatter(t);
   const view = document.defaultView!;

@@ -1,20 +1,15 @@
 # Shared core
 
-Portable TypeScript modules for the extension, a future CLI, or a separate web application.
-This directory has no imports from `extension/` and does not read global DOM or
-Chrome objects. It is source code within this repository, not a published package.
+Portable TypeScript modules with no imports from `extension/` or global DOM/Chrome access. Supply the DOM, network transport, and timing from the host. This is repository source, not a published package.
 
 ## Entry points
 
-- `index.ts`: article extraction, code normalization, Markdown, image downloads,
-  ZIP preparation, and safe errors.
-- `images/index.ts`: image operations without loading content converters.
-- `notion/index.ts`: page ID validation, token normalization, API client, content
-  preparation, export state, and recovery workflow.
-- `types.ts` and `notion/export-state.ts`: TypeScript interfaces and state contracts.
+- `index.ts`: article extraction, Markdown conversion, images, and ZIP export.
+- `images/index.ts`: standalone image operations.
+- `notion/index.ts`: Notion API client, content preparation, and export recovery.
+- `types.ts`, `notion/types.ts`, and `notion/export-state.ts`: public contracts.
 
-Supply a `Document` from a browser, `DOMParser`, or JSDOM. JSDOM remains a caller
-dependency and is not bundled into the extension.
+## Markdown and ZIP
 
 ```ts
 import { analyzePage, createMarkdown, exportArchive, fetchImages } from './core/index.ts';
@@ -28,26 +23,20 @@ if (article.supported && article.articleFound) {
     sourceLabel: 'Source',
     downloadImages: (urls) => fetchImages(urls, { fetcher: fetch }),
   });
-  // The host consumes markdown or saves archive.bytes under archive.filename.
+  // Consume markdown or save archive.bytes under archive.filename.
 }
 ```
 
-Image downloads accept an injected `fetcher`, optional fallback and progress
-callbacks, and a total-byte budget. Progress events contain
-`{ stage, completed, total }`. ZIP preparation returns
-`{ bytes, filename, failedCount }` without saving files.
+Supply a browser Document or JSDOM document. ZIP export returns `{ bytes, filename, failedCount }`; the host saves the file. Progress callbacks receive `{ stage, completed, total }`.
 
-Notion's `createNotionApi({ token, fetcher, sleep })` requires transport and retry
-timing from the host. `prepareNotionExport` accepts a DOM, source label, ID
-generator, and image-error formatter. `exportNotionArticle` accepts the prepared
-state, API, downloader, and progress callbacks. The host retains the state between
-retries. Credentials, their storage, localization, and UI remain host concerns.
+## Notion and recovery
 
-Chrome tab injection, canvas recovery, clipboard access, and browser downloads are
-implemented in `extension/browser/`. The build compiles the tab image downloader
-with its core dependencies into a self-contained function; network logic is not
-duplicated.
+1. Create an API with `createNotionApi({ token, fetcher, sleep })`.
+2. Prepare state with `prepareNotionExport(article, document, { sourceLabel, createId, formatImageError })`.
+3. Pass the state, API, destination, downloader, and formatter to `exportNotionArticle`.
 
-External runtime dependencies are `@mozilla/readability`, `turndown`,
-`turndown-plugin-gfm`, and `fflate`, managed by the repository's root package file.
-Standard Web APIs used by core are available in modern browsers and Node.js 24/26.
+For durable recovery, supply `checkpoint: () => saveState(structuredClone(state))`. The callback receives no arguments and must resolve only after persistence succeeds. A failed checkpoint stops the workflow. Use structured-clone-compatible storage: plain JSON does not preserve the state's Maps and image bytes.
+
+Resume with the saved state and original destination. Confirmed steps are reused; uncertain writes are reconciled when possible. `notionImageUncertain` requires review rather than a blind retry.
+
+The host owns credentials, persistence, scheduling, downloads, localization, and UI. Keep credentials outside export state; browser adapters belong in `extension/`.

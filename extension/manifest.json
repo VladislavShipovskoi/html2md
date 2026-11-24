@@ -3,8 +3,18 @@
   "name": "__MSG_extensionName__",
   "default_locale": "en",
   "version": "0.2.0",
-  "permissions": ["activeTab", "scripting", "downloads", "clipboardWrite", "storage"],
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "clipboardWrite",
+    "storage",
+    "offscreen",
+    "alarms",
+    "sidePanel"
+  ],
   "host_permissions": ["https://api.notion.com/*"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
   "background": {
     "service_worker": "worker.js"
   },
@@ -16,7 +26,6 @@
     "128": "icons/icon-128.png"
   },
   "action": {
-    "default_popup": "popup.html",
     "default_title": "__MSG_extensionName__",
     "default_icon": {
       "16": "icons/icon-16.png",
@@ -26,5 +35,9 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
+  },
+  "minimum_chrome_version": "120",
+  "side_panel": {
+    "default_path": "side-panel.html"
   }
 }

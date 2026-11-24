@@ -53,7 +53,12 @@ async function findMarkers(api: NotionApi, pageId: string, state: ExportState) {
   }
 }
 
-async function attachImage(api: NotionApi, item: ImageOccurrence, uploadId: string): Promise<void> {
+async function attachImage(
+  api: NotionApi,
+  item: ImageOccurrence,
+  uploadId: string,
+  checkpoint: () => Promise<void>
+): Promise<void> {
   const targetId = (item.container ? item.blockId : item.parentId)!;
 
   if (item.insertion === 'uncertain') {
@@ -71,9 +76,12 @@ async function attachImage(api: NotionApi, item: ImageOccurrence, uploadId: stri
 
     item.insertedId = next.id;
     item.insertion = 'confirmed';
+    await checkpoint();
   }
 
   if (!item.insertedId) {
+    item.insertion = 'uncertain';
+    await checkpoint();
     try {
       item.insertedId = await api.appendImage({
         targetId,
@@ -92,17 +100,24 @@ async function attachImage(api: NotionApi, item: ImageOccurrence, uploadId: stri
 
       if (error.ambiguous) {
         item.insertion = 'uncertain';
-        return attachImage(api, item, uploadId);
+        return attachImage(api, item, uploadId, checkpoint);
       }
 
+      item.insertion = 'pending';
+      await checkpoint();
       throw error;
     }
+    await checkpoint();
   }
 
+  await checkpoint();
   await api.setCaption(item.insertedId, item.alt);
+  await checkpoint();
 
   if (item.container) {
+    await checkpoint();
     await api.clearMarker(item.blockId!, item.blockType!);
+    await checkpoint();
   } else {
     if (item.cleanup === 'uncertain') {
       const children = await api.children(item.parentId!);
@@ -112,6 +127,8 @@ async function attachImage(api: NotionApi, item: ImageOccurrence, uploadId: stri
       }
     }
 
+    item.cleanup = 'uncertain';
+    await checkpoint();
     try {
       await api.removeBlock(item.blockId!);
     } catch (caught) {
@@ -131,20 +148,25 @@ export async function exportNotionArticle({
   formatImageError,
   progress = () => {},
   onPage = () => {},
+  checkpoint = async () => {},
 }: NotionExportOptions) {
   if (state.creation === 'uncertain') {
     throw failure('notionImageUncertain');
   }
 
   if (!state.page) {
+    state.creation = 'uncertain';
+    await checkpoint();
     try {
       state.page = await api.createPage(parentId, title);
       state.creation = 'confirmed';
     } catch (caught) {
       const error = errorDetails(caught);
       state.creation = error.ambiguous ? 'uncertain' : 'pending';
+      await checkpoint();
       throw error;
     }
+    await checkpoint();
   }
 
   onPage(state.page);
@@ -165,6 +187,7 @@ export async function exportNotionArticle({
     }
 
     state.downloading = 'confirmed';
+    await checkpoint();
   }
 
   if (state.writing !== 'confirmed') {
@@ -175,16 +198,20 @@ export async function exportNotionArticle({
 
       await findMarkers(api, state.page.id, state);
     } else {
+      state.writing = 'uncertain';
+      await checkpoint();
       try {
         await api.writeMarkdown(state.page.id, state.markdown);
       } catch (caught) {
         const error = errorDetails(caught);
         state.writing = error.ambiguous ? 'uncertain' : 'pending';
+        await checkpoint();
         throw error;
       }
     }
 
     state.writing = 'confirmed';
+    await checkpoint();
   }
 
   if (!state.occurrences.length) {
@@ -202,17 +229,31 @@ export async function exportNotionArticle({
     }
 
     if (!asset.uploadId && !asset.error) {
+      if (asset.uploading === 'uncertain') {
+        throw failure('notionImageUncertain');
+      }
+
+      asset.uploading = 'uncertain';
+      await checkpoint();
       try {
         asset.uploadId = await api.uploadImage(asset.image);
+        asset.uploading = 'confirmed';
       } catch (caught) {
         const error = errorDetails(caught);
 
-        if (fatal(error)) {
+        if (fatal(error) || error.ambiguous) {
+          if (!error.ambiguous) {
+            asset.uploading = 'pending';
+          }
+
+          await checkpoint();
           throw error;
         }
 
+        asset.uploading = 'pending';
         asset.error = { reason: error.imageReason ?? 'upload' };
       }
+      await checkpoint();
     }
 
     count++;
@@ -230,7 +271,7 @@ export async function exportNotionArticle({
 
     if (!asset.error && !item.error) {
       try {
-        await attachImage(api, item, asset.uploadId!);
+        await attachImage(api, item, asset.uploadId!, checkpoint);
       } catch (caught) {
         const error = errorDetails(caught);
 
@@ -249,6 +290,7 @@ export async function exportNotionArticle({
     }
 
     if (asset.error || item.error) {
+      await checkpoint();
       await api.writeImageError(
         item.blockId!,
         item.blockType!,
@@ -259,6 +301,7 @@ export async function exportNotionArticle({
 
     item.cleanup = 'confirmed';
     item.status = 'complete';
+    await checkpoint();
   }
 
   return state;
