@@ -15,7 +15,6 @@ export async function initializePopup({
   i18n,
   browser,
   repository,
-  notionConnection,
   notionApi,
   createId,
   themeStorage,
@@ -63,6 +62,7 @@ export async function initializePopup({
   let saved = false;
   const integrationSelect = document.querySelector<HTMLSelectElement>('#integration-select')!;
   let pendingIntegrationId: string | undefined;
+  let pendingParentId: string | undefined;
 
   const openSettings = async () => {
     try {
@@ -111,9 +111,10 @@ export async function initializePopup({
         return;
       }
 
-      const { token, parentId } = await notionConnection(id);
+      const connection = (await repository.list()).find((record) => record.id === id);
+      const parentId = pendingParentId ?? connection?.parentId;
 
-      if (!token || !parentId) {
+      if (!connection?.connected || !parentId) {
         notionMessage.textContent = t('notionNeedsSettings');
         notionSettings.hidden = false;
         return;
@@ -125,11 +126,12 @@ export async function initializePopup({
         createId,
       });
       pendingIntegrationId = id;
+      pendingParentId = parentId;
       integrationSelect.disabled = true;
 
       await exportNotionArticle({
         state: exportState,
-        api: notionApi(token),
+        api: notionApi(id),
         parentId,
         title: pageTitle,
         formatImageError: messages.imageError,

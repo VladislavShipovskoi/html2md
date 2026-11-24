@@ -1,7 +1,7 @@
 import type { PageAnalysis, ImageResult } from '../../core/types.ts';
-import type { IntegrationStorage, ThemeStorage, Translate } from '../shared/types.ts';
-import type { NotionFetcher } from '../../core/notion/types.ts';
+import type { ThemeStorage, Translate } from '../shared/types.ts';
 import type { IntegrationTransport } from '../integrations/commands.ts';
+import type { NotionTransport } from './notion-client.ts';
 export interface Tab {
   id?: number;
   url?: string;
@@ -37,12 +37,11 @@ export interface BrowserOptions {
 export interface RuntimeEnvironment extends Omit<BrowserOptions, 'clipboard'> {
   document: Document;
   chrome: ChromeHost & {
-    runtime: ChromeHost['runtime'] & IntegrationTransport;
+    runtime: ChromeHost['runtime'] & IntegrationTransport & NotionTransport;
     i18n: { getMessage: Translate };
-    storage: IntegrationStorage & ThemeStorage;
+    storage: ThemeStorage;
   };
   navigator: { clipboard: Pick<Clipboard, 'writeText'> };
   crypto: Pick<Crypto, 'randomUUID'>;
-  fetch: NotionFetcher;
 }
 export type AnalyzedPage = Extract<PageAnalysis, { supported: true }>;

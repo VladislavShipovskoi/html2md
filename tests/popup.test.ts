@@ -1,4 +1,5 @@
 import { mockStorage } from './storage-helper.ts';
+import { mockWorker } from './worker-helper.ts';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
@@ -54,10 +55,27 @@ async function openPopup(t, options: Record<string, any> = {}) {
     { notionParentId: options.notion?.parentId },
     { notionToken: options.notion?.token }
   );
-  const chrome = {
+  const worker = mockWorker({
     storage,
+    locks,
+    fetcher: async (...args) => {
+      assert.ok(state.fetcher, 'Unexpected API request');
+      return state.fetcher(...args);
+    },
+  });
+  const chrome = {
+    storage: {
+      local: {
+        get: async (key) => {
+          assert.equal(key, 'theme');
+          return storage.local.get(key);
+        },
+        set: storage.local.set,
+      },
+    },
     i18n: { getMessage: translate },
     runtime: {
+      sendMessage: worker.sendMessage,
       openOptionsPage: async () => {
         state.optionsOpened = true;
       },
@@ -120,7 +138,6 @@ async function openPopup(t, options: Record<string, any> = {}) {
     URL: PopupURL,
     Blob,
     navigator: {
-      locks,
       clipboard: {
         writeText: async (text) => {
           if (options.copyError) {
@@ -131,10 +148,6 @@ async function openPopup(t, options: Record<string, any> = {}) {
         },
       },
     },
-    fetch: async (...args) => {
-      assert.ok(state.fetcher, 'Unexpected API request');
-      return state.fetcher(...args);
-    },
     setTimeout: (callback, delay) => {
       state.timers.push({ callback, delay });
       return 1;
@@ -143,6 +156,13 @@ async function openPopup(t, options: Record<string, any> = {}) {
   t.after(() => window.close());
   await initializePopup(services);
   await flush();
+  t.after(() => {
+    assert.ok(
+      !JSON.stringify([worker.requests, worker.responses]).includes(
+        options.notion?.token ?? 'private-token'
+      )
+    );
+  });
   const element = (selector) => window.document.querySelector(selector);
   return {
     window,
@@ -338,7 +358,7 @@ for (const locale of ['en', 'ru']) {
         result = {
           results: [
             {
-              id: 'marker',
+              id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
               type: 'paragraph',
               paragraph: { rich_text: [{ text: { content: marker } }] },
             },
