@@ -45,4 +45,4 @@ The export queue continues after closing the panel and retains tasks across brow
 
 I'd be happy to hear your suggestions for improvements and reports of any bugs you find. Open an [issue](https://github.com/VladislavShipovskoi/html2md/issues) to share an idea or report a problem. For bugs, please include steps to reproduce, your Chrome version, and the page URL or a minimal HTML example when possible.
 
-[Core API](core/README.md) ? [MIT License](LICENSE)
+[MIT License](LICENSE)
