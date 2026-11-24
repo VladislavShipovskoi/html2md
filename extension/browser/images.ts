@@ -26,9 +26,28 @@ export function fetchPageImages(
   { document, fetcher }: { document: Document; fetcher: Fetcher }
 ) {
   return fetchImages(urls, {
-    fetcher,
+    fetcher: async (url, options) => {
+      try {
+        const response = await fetcher(url, options);
+        const needsSession =
+          [401, 403].includes(response.status) ||
+          (response.ok && !response.headers.get('content-type')?.startsWith('image/'));
+
+        if (!needsSession) {
+          return response;
+        }
+
+        await response.body?.cancel();
+      } catch (error) {
+        if (!(error instanceof TypeError) || options?.signal?.aborted) {
+          throw error;
+        }
+      }
+
+      return fetcher(url, { ...options, credentials: 'include' });
+    },
     maxTotalBytes,
-    credentials: 'include',
+    credentials: 'same-origin',
     fallback: (url) => canvasImage(url, document),
   });
 }

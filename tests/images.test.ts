@@ -25,7 +25,7 @@ async function runFallback({
     Uint8Array,
     fetch: async (request, options) => {
       assert.equal(request, url);
-      assert.equal(options.credentials, 'include');
+      assert.ok(['same-origin', 'include'].includes(options.credentials));
       throw new TypeError('Failed to fetch');
     },
     document: {
@@ -63,6 +63,28 @@ test('page image adapter exports a displayed LMS SVG as PNG after fetch failure'
   assert.equal(results[0].type, 'image/png');
   assert.deepEqual(Array.from(results[0].bytes), [0, 0, 0]);
   assert.equal(results[0].failed, undefined);
+});
+
+test('public CDN images need no cross-origin cookies; protected images retry with the session', async () => {
+  for (const protectedImage of [false, true]) {
+    const credentials = [];
+    const results = await fetchPageImages([url], 1024, {
+      document: { images: [] } as unknown as Document,
+      fetcher: async (_url, options) => {
+        credentials.push(options.credentials);
+
+        if (protectedImage && options.credentials !== 'include') {
+          return new Response(null, { status: 401 });
+        }
+
+        return new Response(new Uint8Array([1, 2]), {
+          headers: { 'Content-Type': 'image/png', 'Access-Control-Allow-Origin': '*' },
+        });
+      },
+    });
+    assert.deepEqual(credentials, protectedImage ? ['same-origin', 'include'] : ['same-origin']);
+    assert.deepEqual(results[0].bytes, [1, 2]);
+  }
 });
 test('canvas fallback respects the byte budget and rejects tainted or oversized canvases', async () => {
   const limited = await runFallback({ maxTotalBytes: 2 });
